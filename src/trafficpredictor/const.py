@@ -14,9 +14,9 @@ LEFT = 2
 UP = 3
 
 #grid
-GRID_SIZE = 5
+GRID_SIZE = 10
 NODES = GRID_SIZE**2
-TIME_PERIODS = 48
+PERIODS = 3 #48
 MAX_WEIGHT = 10
 MAX_INTENSITY = 100
 MAX_DURATION = 10
@@ -27,7 +27,7 @@ PERCENT_SEED_EDGES = .1
 SENSOR_TIME_POS = 1
 SENSOR_NODE_POS = 0
 MINS_IN_A_DAY = 1440
-PERIOD_IN_MINS = MINS_IN_A_DAY/TIME_PERIODS
+PERIOD_IN_MINS = MINS_IN_A_DAY/PERIODS
 
 
 #Q Learning
@@ -36,14 +36,12 @@ ALPHA_ADJ_PERIOD = 0.3 #learning rate for states with adjacent time periods
 GAMMA = 1.0 #discount factor 
 
 #Epsilon Greedy Explorer
-EPSILON = 0.3
-DECAY = 0.9999
+EPSILON = .4 #0.1
+DECAY = 0.99999 #0.9999
 
 #task
-PERIODS = 48 #number of time periods in a day
 STATES = NODES * PERIODS
 POSSIBLE_ACTIONS = 4
 
 #main
-TRIALS = 100
-ITERATIONS = 0
+TRIALS = 1000
