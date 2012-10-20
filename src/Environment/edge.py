@@ -21,4 +21,4 @@ class Edge(object):
         self.duration = duration
         
     def travelTime(self, time):
-        return 
+        return self.weight + self.intensity * math.exp(-1 * self.duration * time^2)
