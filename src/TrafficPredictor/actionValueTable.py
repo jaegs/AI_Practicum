@@ -8,16 +8,15 @@ from pybrain.rl.learners.valuebased import ActionValueTable
 import grid, const
 
 def state_number(node, period):
-    return grid.node_number(node) + grid.TIME_PERIODS * period
+    return grid.node_number(node) + const.PERIODS * period
 
 def action(edge):
     return const.DOWN if edge[1][0] > edge[0][0] else const.RIGHT
          
 
-class TrafficActionValueTable(ActionValueTable):
-    '''
-    classdocs
-    '''
+class GPSActionValueTable(ActionValueTable):
+    def __init__(self):
+        ActionValueTable.__init__(self, const.STATES, const.POSSIBLE_ACTIONS)
 
 
     def initialize(self, grid):

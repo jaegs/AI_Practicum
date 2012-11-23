@@ -5,9 +5,12 @@ Created on Nov 13, 2012
 '''
 
 from pybrain.rl.environments.task import Task
+import grid, const
 
+def state_number((node, period)):
+    return grid.node_number(node) * const.TIME_PERIODS + period
 
-class ObservableGrid(Task):
+class GPS(Task):
     '''
     classdocs
     '''

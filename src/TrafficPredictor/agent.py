@@ -6,7 +6,7 @@ Created on Nov 13, 2012
 
 from pybrain.rl.agents.learning import LearningAgent
 
-class TrafficAgent(LearningAgent): #maybe use LearningAgent...
+class DrivingAgent(LearningAgent):
     '''
     classdocs
     '''

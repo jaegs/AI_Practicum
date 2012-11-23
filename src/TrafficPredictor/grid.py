@@ -12,10 +12,6 @@ import const
 from pybrain.utilities import Named
 from pybrain.rl.environments.environment import Environment
 
-#percent change in coeff's between edges
-const.EDGE_GRADIENT = .005
-const.PERCENT_SEED_EDGES = .1
-
 U_POS = 0
 V_POS = 1
 EDGE_DATA_POS = 2

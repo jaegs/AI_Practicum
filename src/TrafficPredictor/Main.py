@@ -5,20 +5,22 @@ Created on Nov 22, 2012
 '''
 
 from pybrain.rl.learners import Q
-from pybrain.rl.learners.valuebased import ActionValueTable
 
 from grid import Grid
-from task import ObservableGrid
-
+from task import GPS
+from agent import DrivingAgent
+from q import GPSLearner
+from experiment import TripExperiment
+from actionValueTable import GPSActionValueTable
+import const
 
 if __name__ == '__main__':
     environment = Grid()
-    controller = ActionValueTable(GRID_SIZE**2, 2)
+    controller = GPSActionValueTable()
+    controller.initialize(environment)
+    learner = GPSLearner()
+    agent = DrivingAgent(controller, learner)
+    task = GPS(environment)
     
-    controller.initialize(.1) #init with estimated time
-    learner = Q()
-    agent= LearningAgent(controller, learning)
-    task = ObservableGrid(environment)
-    
-    experiment = Experiment(task, agent)
+    experiment = TripExperiment(task, agent)
     
