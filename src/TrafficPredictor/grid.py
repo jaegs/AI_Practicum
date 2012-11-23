@@ -86,6 +86,71 @@ class Grid(Environment):
     def reset(self):
         pass
          
-        
+def printVerticalEdges(gridWidth):
+    printedLine = '  |'
+    for i in range(gridWidth-1):
+        printedLine = printedLine + '                   |'  
+    print printedLine
+    
+def findAppropriateEdge(i,j):
+    weight = ""
+    if ((i,j),(i,j+1)) in edgeDict:
+        weight = "%.5f" % edgeDict[((i,j),(i,j+1))]
+    else:
+        weight = "%.5f" % edgeDict[((i,j+1),(i,j))]
+    return weight
+
+def findAppropriateVerticalEdge(i,j,k,l):
+    weight = ""
+    if ((i,j),(k,l)) in edgeDict:
+        weight = "%.5f" % edgeDict[((i,j),(k,l))]
+    else:
+        weight = "%.5f" % edgeDict[((k,l),(i,j))]
+    return weight
+
+
+
+#Create the grid
+
 F = Grid()
-print( F.grid.edges(data=True))
+dictionaryBuilder = []
+counter = 0
+for edge in (F.grid.edges(data=True)):
+    (source,sink,data) = edge
+    dictionaryBuilder[len(dictionaryBuilder):] = [((source,sink),data[EDGE_KEY].travelTime(2))]
+    counter += 1
+edgeDict = dict(dictionaryBuilder)
+
+
+#Print the whole grid
+
+i = 0
+while i < GRID_SIZE:
+    j=0
+    currentLine = '('+str(i)+',0)' + "----" + findAppropriateEdge(i,0) + "----" + '('+str(i)+',1)'
+    while j < GRID_SIZE - 2:
+        j += 1
+        currentLine = currentLine + '----' + findAppropriateEdge(i,j) + "----" + '('+str(i)+','+str(j+1)+')'
+        
+    print currentLine
+    
+    if i+1 < GRID_SIZE:
+        printVerticalEdges(GRID_SIZE)
+        verticalEdges = str(findAppropriateVerticalEdge(i, 0, i+1, 0))
+        a = 1
+        while a < GRID_SIZE:
+            verticalEdges = verticalEdges + '            ' + \
+                str(findAppropriateVerticalEdge(i, a, i+1, a))
+            a += 1
+        print verticalEdges 
+        printVerticalEdges(GRID_SIZE)
+    i += 1
+    
+  
+    
+    
+
+
+
+
+
