@@ -7,19 +7,14 @@ Created on Oct 19, 2012
 import networkx as nx
 from random import *
 from edge import Edge
+import const
 
 #from pybrain.utilities import Named
 #from pybrain.rl.environments.environment import Environment
 
-GRID_SIZE = 5
-TIME_PERIODS = 48
-MAX_WEIGHT = 10
-MAX_INTENSITY = 100
-MAX_DURATION = 10
-
 #percent change in coeff's between edges
-EDGE_GRADIENT = .005
-PERCENT_SEED_EDGES = .1
+const.EDGE_GRADIENT = .005
+const.PERCENT_SEED_EDGES = .1
 
 U_POS = 0
 V_POS = 1
@@ -27,11 +22,11 @@ EDGE_DATA_POS = 2
 EDGE_KEY = "object"
 WEIGHT_KEY = "weight"
 
-DESTINATION = (GRID_SIZE - 1, GRID_SIZE - 1)
+
 
 def node_number(node):
     a, b = node
-    return a + GRID_SIZE * b
+    return a + const.GRID_SIZE * b
 
 class Grid(object):
     '''
@@ -59,7 +54,7 @@ class Grid(object):
             edgeDict = dict(dictionaryBuilder)
             return edgeDict
     
-        self.grid = nx.grid_2d_graph(GRID_SIZE, GRID_SIZE)
+        self.grid = nx.grid_2d_graph(const.GRID_SIZE, const.GRID_SIZE)
         
         #Makes the graph directed so that edges either go in increasing x or y
         self.grid = self.grid.to_directed()
@@ -75,18 +70,20 @@ class Grid(object):
         edges = self.grid.edges(data = True)
         shuffle(edges)
         
-        division = int(len(edges) * PERCENT_SEED_EDGES)
+        division = int(len(edges) * const.PERCENT_SEED_EDGES)
         seeds = edges[:division]
         rest = edges[division:]
         for u, v, data in seeds:
+
             weight = randint(0, MAX_WEIGHT)
             intensity = randint(0, MAX_INTENSITY)
             duration = randint(0, MAX_DURATION)
+
             #makes the node object a property of the edge
-            data[EDGE_KEY] = Edge(u, v, weight, duration, intensity)
-            data[WEIGHT_KEY] = weight
+            data[EDGE_KEY] = Edge(weight, duration, intensity)
+            data[WEIGHT_KEY] = weight #so networkx shortest path can work
             
-        get_gradient = lambda : (1 + choice((-1,1)) * EDGE_GRADIENT)
+        get_gradient = lambda : (1 + choice((-1,1)) * const.EDGE_GRADIENT)
         rest = dict([((e[U_POS], e[V_POS]), e[EDGE_DATA_POS]) for e in rest]) #(u,v) : data dictionary
         while(rest):
             for (u,v), data in rest.items():
@@ -98,6 +95,7 @@ class Grid(object):
                     intensity = get_gradient() * neighbor_data.intensity
                     duration = get_gradient() * neighbor_data.duration
                     data[EDGE_KEY] = Edge(weight, intensity, duration)
+                    data[WEIGHT_KEY] = weight
                     del rest[(u,v)]
 
         self.edgeDict = buildEdgeDict()
@@ -107,13 +105,13 @@ class Grid(object):
     
     def all_shortest_path_lengths(self):
         """
-            Finds the shortest travel time from every node in the graph to the destination
+            Finds the shortest travel time from every node in the graph to the const.DESTINATION
             node assuming there is no traffic.
             :rtype (node, length)
         """
         lengths = []
         for n in self.grid.nodes_iter():
-            length = nx.shortest_path_length(self.grid, n, DESTINATION, WEIGHT_KEY)
+            length = nx.shortest_path_length(self.grid, n, const.DESTINATION, WEIGHT_KEY)
             lengths.append((n, length))
         return lengths
     
@@ -159,25 +157,25 @@ class Grid(object):
     
     def toString(self, time):
         i = 0
-        while i < GRID_SIZE:
+        while i < const.GRID_SIZE:
             j=0
             currentLine = '('+str(i)+',0)' + "----" + self.findAppropriateEdge(i,0,g,time) + "----" + '('+str(i)+',1)'
-            while j < GRID_SIZE - 2:
+            while j < const.GRID_SIZE - 2:
                 j += 1
                 currentLine = currentLine + '----' + self.findAppropriateEdge(i,j,g,time) + "----" + '('+str(i)+','+str(j+1)+')'
                 
             print currentLine
             
-            if i+1 < GRID_SIZE:
-                self.printVerticalEdges(GRID_SIZE)
+            if i+1 < const.GRID_SIZE:
+                self.printVerticalEdges(const.GRID_SIZE)
                 verticalEdges = str(self.findAppropriateVerticalEdge(i, 0, i+1, 0,g,time))
                 a = 1
-                while a < GRID_SIZE:
+                while a < const.GRID_SIZE:
                     verticalEdges = verticalEdges + '            ' + \
                         str(self.findAppropriateVerticalEdge(i, a, i+1, a,g,time))
                     a += 1
                 print verticalEdges 
-                self.printVerticalEdges(GRID_SIZE)
+                self.printVerticalEdges(const.GRID_SIZE)
             i += 1
 
 
