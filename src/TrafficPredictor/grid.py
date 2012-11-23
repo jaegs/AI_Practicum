@@ -83,8 +83,8 @@ class Grid(Environment):
             intensity = random.randint(0, MAX_INTENSITY)
             duration = random.randint(0, MAX_DURATION)
             #makes the node object a property of the edge
-            data[EDGE_KEY] = Edge(u, v, weight, duration, intensity)
-            data[WEIGHT_KEY] = weight
+            data[EDGE_KEY] = Edge(weight, duration, intensity)
+            data[WEIGHT_KEY] = weight #so networkx shortest path can work
             
         get_gradient = lambda : (1 + choice((-1,1)) * EDGE_GRADIENT)
         rest = dict([((e[U_POS], e[V_POS]), e[EDGE_DATA_POS]) for e in rest]) #(u,v) : data dictionary
@@ -98,6 +98,7 @@ class Grid(Environment):
                     intensity = get_gradient() * neighbor_data.intensity
                     duration = get_gradient() * neighbor_data.duration
                     data[EDGE_KEY] = Edge(weight, intensity, duration)
+                    data[WEIGHT_KEY] = weight
                     del rest[(u,v)]
 
         self.edgeDict = buildEdgeDict()
