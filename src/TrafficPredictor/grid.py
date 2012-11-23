@@ -8,6 +8,9 @@ import networkx as nx
 from random import *
 from edge import Edge
 
+from pybrain.utilities import Named
+from pybrain.rl.environments.environment import Environment
+
 GRID_SIZE = 5
 MAX_WEIGHT = 10
 MAX_INTENSITY = 100
@@ -21,7 +24,7 @@ V_POS = 1
 EDGE_DATA_POS = 2
 EDGE_KEY = "object"
 
-class Grid(object):
+class Grid(Environment):
     '''
     classdocs
     '''
@@ -65,6 +68,23 @@ class Grid(object):
                     duration = get_gradient() * neighbor_data.duration
                     data[EDGE_KEY] = Edge(weight, intensity, duration)
                     del rest[(u,v)]
+                    
+    def getSensors(self):
+        """
+            See pybrain/rl/environments/environment.py
+            :rtype: numpy array double
+        """
+        pass
+    
+    def performAction(self):
+        """
+            :key action: an action that should be executed in the Environment. 
+            :type action: by default, this is assumed to be a numpy array of doubles
+        """
+        pass
+    
+    def reset(self):
+        pass
          
         
 F = Grid()
