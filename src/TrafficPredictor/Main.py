@@ -17,7 +17,7 @@ if __name__ == '__main__':
     
     controller.initialize(.1) #init with estimated time
     learner = Q()
-    
+    agent= LearningAgent(controller, learning)
     task = ObservableGrid(environment)
     
     experiment = Experiment(task, agent)

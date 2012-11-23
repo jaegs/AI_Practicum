@@ -5,15 +5,13 @@ Created on Nov 22, 2012
 '''
 
 from pybrain.rl.learners.valuebased import ActionValueTable
-import grid
+import grid, const
 
 def state_number(node, period):
     return grid.node_number(node) + grid.TIME_PERIODS * period
 
-DOWN = 0
-RIGHT = 1
 def action(edge):
-    return DOWN if edge[1][0] > edge[0][0] else RIGHT
+    return const.DOWN if edge[1][0] > edge[0][0] else const.RIGHT
          
 
 class TrafficActionValueTable(ActionValueTable):
