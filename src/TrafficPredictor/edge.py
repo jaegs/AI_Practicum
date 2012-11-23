@@ -8,13 +8,16 @@ import math
 import random
 
 NOISE_STD_DEV = 0.5
+
+
+
 class Edge(object):
     '''
     classdocs
     '''
 
 
-    def __init__(self, weight, intensity, duration):
+    def __init__(self, weight, duration, intensity):
         '''
         Constructor
         '''
