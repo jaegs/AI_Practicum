@@ -8,8 +8,8 @@ import networkx as nx
 from random import *
 from edge import Edge
 
-from pybrain.utilities import Named
-from pybrain.rl.environments.environment import Environment
+#from pybrain.utilities import Named
+#from pybrain.rl.environments.environment import Environment
 
 GRID_SIZE = 5
 TIME_PERIODS = 48
@@ -33,7 +33,7 @@ def node_number(node):
     a, b = node
     return a + GRID_SIZE * b
 
-class Grid(Environment):
+class Grid(object):
     '''
     classdocs
     '''
@@ -80,8 +80,8 @@ class Grid(Environment):
         rest = edges[division:]
         for u, v, data in seeds:
             weight = randint(0, MAX_WEIGHT)
-            intensity = random.randint(0, MAX_INTENSITY)
-            duration = random.randint(0, MAX_DURATION)
+            intensity = randint(0, MAX_INTENSITY)
+            duration = randint(0, MAX_DURATION)
             #makes the node object a property of the edge
             data[EDGE_KEY] = Edge(u, v, weight, duration, intensity)
             data[WEIGHT_KEY] = weight

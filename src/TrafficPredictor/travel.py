@@ -42,8 +42,8 @@ class Traveler(object):
         return (traversed_path, total_time)
 
 # Some code for testing
-#g = Grid()
-#t = Traveler([((1,1),(1,2)),((1,2),(2,2)),((2,2),(3,2)),((3,2),(4,2)),((4,2),(4,3))],2.0,g)
-#print t.travel()
-#g.toString(2)
+g = Grid()
+t = Traveler([((1,1),(1,2)),((1,2),(2,2)),((2,2),(3,2)),((3,2),(4,2)),((4,2),(4,3))],2.0,g)
+print t.travel()
+g.toString(2)
     
