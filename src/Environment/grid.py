@@ -37,6 +37,16 @@ class Grid(object):
         parameters to at least one of their adjacent edges.
         '''
 
+        def buildEdgeDict():
+            dictionaryBuilder = []
+            counter = 0
+            for edge in (self.grid.edges(data=True)):
+                (source,sink,data) = edge
+                dictionaryBuilder[len(dictionaryBuilder):] = [((source,sink),data[EDGE_KEY])]
+                counter += 1
+            edgeDict = dict(dictionaryBuilder)
+            return edgeDict
+    
         self.grid = nx.grid_2d_graph(GRID_SIZE, GRID_SIZE)
         
         edges = self.grid.edges(data = True)
@@ -65,66 +75,63 @@ class Grid(object):
                     duration = get_gradient() * neighbor_data.duration
                     data[EDGE_KEY] = Edge(weight, intensity, duration)
                     del rest[(u,v)]
-         
-def printVerticalEdges(gridWidth):
-    printedLine = '  |'
-    for i in range(gridWidth-1):
-        printedLine = printedLine + '                   |'  
-    print printedLine
+        self.edgeDict = buildEdgeDict()
+        
     
-def findAppropriateEdge(i,j):
-    weight = ""
-    if ((i,j),(i,j+1)) in edgeDict:
-        weight = "%.5f" % edgeDict[((i,j),(i,j+1))]
-    else:
-        weight = "%.5f" % edgeDict[((i,j+1),(i,j))]
-    return weight
-
-def findAppropriateVerticalEdge(i,j,k,l):
-    weight = ""
-    if ((i,j),(k,l)) in edgeDict:
-        weight = "%.5f" % edgeDict[((i,j),(k,l))]
-    else:
-        weight = "%.5f" % edgeDict[((k,l),(i,j))]
-    return weight
+         
+    def printVerticalEdges(self,gridWidth):
+        printedLine = '  |'
+        for i in range(gridWidth-1):
+            printedLine = printedLine + '                   |'  
+        print printedLine
+        
+    def findAppropriateEdge(self,i,j, grid, time):
+        weight = ""
+        if ((i,j),(i,j+1)) in self.edgeDict:
+            weight = "%.5f" % self.edgeDict[((i,j),(i,j+1))].travelTime(time)
+        else:
+            weight = "%.5f" % self.edgeDict[((i,j+1),(i,j))].travelTime(time)
+        return weight
+    
+    def findAppropriateVerticalEdge(self,i,j,k,l,grid,time):
+        weight = ""
+        if ((i,j),(k,l)) in self.edgeDict:
+            weight = "%.5f" % self.edgeDict[((i,j),(k,l))].travelTime(time)
+        else:
+            weight = "%.5f" % self.edgeDict[((k,l),(i,j))].travelTime(time)
+        return weight
+    
+    def toString(self, time):
+        i = 0
+        while i < GRID_SIZE:
+            j=0
+            currentLine = '('+str(i)+',0)' + "----" + self.findAppropriateEdge(i,0,g,time) + "----" + '('+str(i)+',1)'
+            while j < GRID_SIZE - 2:
+                j += 1
+                currentLine = currentLine + '----' + self.findAppropriateEdge(i,j,g,time) + "----" + '('+str(i)+','+str(j+1)+')'
+                
+            print currentLine
+            
+            if i+1 < GRID_SIZE:
+                self.printVerticalEdges(GRID_SIZE)
+                verticalEdges = str(self.findAppropriateVerticalEdge(i, 0, i+1, 0,g,time))
+                a = 1
+                while a < GRID_SIZE:
+                    verticalEdges = verticalEdges + '            ' + \
+                        str(self.findAppropriateVerticalEdge(i, a, i+1, a,g,time))
+                    a += 1
+                print verticalEdges 
+                self.printVerticalEdges(GRID_SIZE)
+            i += 1
 
 
 
 #Create the grid
-
-F = Grid()
-dictionaryBuilder = []
-counter = 0
-for edge in (F.grid.edges(data=True)):
-    (source,sink,data) = edge
-    dictionaryBuilder[len(dictionaryBuilder):] = [((source,sink),data[EDGE_KEY].travelTime(2))]
-    counter += 1
-edgeDict = dict(dictionaryBuilder)
-
-
+g = Grid()
 #Print the whole grid
+#g.toString(2)
 
-i = 0
-while i < GRID_SIZE:
-    j=0
-    currentLine = '('+str(i)+',0)' + "----" + findAppropriateEdge(i,0) + "----" + '('+str(i)+',1)'
-    while j < GRID_SIZE - 2:
-        j += 1
-        currentLine = currentLine + '----' + findAppropriateEdge(i,j) + "----" + '('+str(i)+','+str(j+1)+')'
-        
-    print currentLine
-    
-    if i+1 < GRID_SIZE:
-        printVerticalEdges(GRID_SIZE)
-        verticalEdges = str(findAppropriateVerticalEdge(i, 0, i+1, 0))
-        a = 1
-        while a < GRID_SIZE:
-            verticalEdges = verticalEdges + '            ' + \
-                str(findAppropriateVerticalEdge(i, a, i+1, a))
-            a += 1
-        print verticalEdges 
-        printVerticalEdges(GRID_SIZE)
-    i += 1
+
     
   
     
