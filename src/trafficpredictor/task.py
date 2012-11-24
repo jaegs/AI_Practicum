@@ -5,7 +5,7 @@ Created on Nov 13, 2012
 '''
 
 from pybrain.rl.environments.episodic import EpisodicTask
-import const, math, random
+import const, math, random, grid
 
 def state(node, period):
     return node * const.TIME_PERIODS + period
@@ -38,17 +38,14 @@ class GPS(EpisodicTask):
     
     def getObservation(self):
         self.prev_time = self.current_time
-        sensors = self.env.getSensors()
-        self.current_time = sensors[const.SENSOR_TIME_POS]
-        node = sensors[const.SENSOR_NODE_POS]
+        self.current_time, node = self.env.getSensors()
         period = math.floor(self.current_time * const.PERIODS / const.MINS_IN_A_DAY)
         state = state(node, period)
         return state
         
-        #filter here
         
     def isFinished(self):
-        return self.current_state == const.DESTINATION
+        return self.current_state == grid.node_number(const.DESTINATION)
     
     
         
