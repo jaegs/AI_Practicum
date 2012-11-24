@@ -8,6 +8,7 @@ import networkx as nx
 from random import *
 from edge import Edge
 import const
+import time
 #from pybrain.rl.environments import Environment
 
 #from pybrain.utilities import Named
@@ -87,10 +88,15 @@ class Grid():
             
         get_gradient = lambda : (1 + choice((-1,1)) * const.EDGE_GRADIENT)
         rest = dict([((e[U_POS], e[V_POS]), e[EDGE_DATA_POS]) for e in rest]) #(u,v) : data dictionary
+        
         while(rest):
             for (u,v), data in rest.items():
                 #get adjacent edges from both u and v nodes that have params initialized
-                neighbor_edges = [edge for edge in self.grid.edges_iter(nbunch=[u, v], data = True) if edge[EDGE_DATA_POS]]
+                neighbor_edges1 = [edge for edge in self.grid.out_edges_iter(nbunch=[u, v], data = True) if edge[EDGE_DATA_POS]]
+                neighbor_edges2 = [edge for edge in self.grid.in_edges_iter(nbunch=[u, v], data = True) if edge[EDGE_DATA_POS]]
+                neighbor_edges = neighbor_edges1 + neighbor_edges2
+#                print (u,v)
+#                print "Neighbor edges: ", neighbor_edges
                 if (neighbor_edges):
                     neighbor_data = choice(neighbor_edges)[EDGE_DATA_POS][EDGE_KEY]
                     weight = get_gradient() * neighbor_data.weight
@@ -99,7 +105,8 @@ class Grid():
                     data[EDGE_KEY] = Edge(weight, intensity, duration)
                     data[WEIGHT_KEY] = weight
                     del rest[(u,v)]
-
+            #time.sleep(1)
+            #print "Rest: ", rest
         self.edgeDict = buildEdgeDict()
         
     
@@ -206,7 +213,7 @@ class Grid():
 g = Grid()
 
 #Print the whole grid
-#g.toString(2)
+g.toString(2)
 
 
     
