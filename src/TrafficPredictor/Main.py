@@ -4,8 +4,6 @@ Created on Nov 22, 2012
 @author: Benjamin Jaeger
 '''
 
-from pybrain.rl.learners import Q
-
 from grid import Grid
 from task import GPS
 from agent import DrivingAgent

@@ -8,6 +8,7 @@ import networkx as nx
 from random import *
 from edge import Edge
 import const
+#from pybrain.rl.environments import Environment
 
 #from pybrain.utilities import Named
 #from pybrain.rl.environments.environment import Environment
@@ -24,7 +25,7 @@ def node_number(node):
     a, b = node
     return a + const.GRID_SIZE * b
 
-class Grid(object):
+class Grid():
     '''
     classdocs
     '''
@@ -50,6 +51,7 @@ class Grid(object):
             edgeDict = dict(dictionaryBuilder)
             return edgeDict
     
+        
         self.grid = nx.grid_2d_graph(const.GRID_SIZE, const.GRID_SIZE)
         
         #Makes the graph directed so that edges either go in increasing x or y
@@ -60,7 +62,7 @@ class Grid(object):
             if(bx < ax or by < ay):
                 to_remove.append(e)
         self.grid.remove_edges_from(to_remove)
-        print self.grid.edges()
+      
         #TODO - directed edges breaks printing code
         
         edges = self.grid.edges(data = True)
@@ -71,9 +73,9 @@ class Grid(object):
         rest = edges[division:]
         for u, v, data in seeds:
 
-            weight = randint(0, MAX_WEIGHT)
-            intensity = randint(0, MAX_INTENSITY)
-            duration = randint(0, MAX_DURATION)
+            weight = randint(0, const.MAX_WEIGHT)
+            intensity = randint(0, const.MAX_INTENSITY)
+            duration = randint(0, const.MAX_DURATION)
 
             #makes the node object a property of the edge
             data[EDGE_KEY] = Edge(weight, duration, intensity)
@@ -110,23 +112,43 @@ class Grid(object):
             length = nx.shortest_path_length(self.grid, n, const.DESTINATION, WEIGHT_KEY)
             lengths.append((n, length))
         return lengths
-    
+   
     def getSensors(self):
         """
-            See pybrain/rl/environments/environment.py
-            :rtype: numpy array double
+            Return: (current time of the day, current node) tuple
         """
-        pass
+        return (self.time_of_day, self.current_node)
     
-    def performAction(self):
+    def performAction(self, action):
         """
-            :key action: an action that should be executed in the Environment. 
-            :type action: by default, this is assumed to be a numpy array of doubles
+            :key action: An action that should be executed in the environment
+            :type action:A string: "up" | "down" | "left" | "right"
         """
-        pass
+        (i,j) = self.current_node
+        if action == "up":
+            self.current_node = (i-1,j)
+            self.curren_time = findEdge((self.current_node,(i-1,j))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+        elif action == "down":
+            self.current_node = (i+1,j)
+            self.curren_time = findEdge((self.current_node,(i+1,j))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+        elif action == "left":
+            self.current_node = (i,j-1)
+            self.curren_time = findEdge((self.current_node,(i,j-1))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+        elif action == "right":
+            self.current_node = (i,j+1)
+            self.curren_time = findEdge((self.current_node,(i,j+1))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+        
+        
+        def findEdge(self,edgeKey):
+            (firstTuple, secondTuple) = edgeKey
+            if edgeKey in self.grid.edgeDict:
+                return self.grid.edgeDict[edgeKey]
+            else:
+                return self.grid.edgeDict[(secondTuple,firstTuple)]
     
-    def reset(self):
-        pass
+    def reset(self, time_of_day, start_node):
+        self.time_of_day = time_of_day
+        self.current_node = start_node
 
          
     def printVerticalEdges(self,gridWidth):
@@ -178,6 +200,7 @@ class Grid(object):
 
 #Create the grid
 g = Grid()
+print "Hello worls"
 #Print the whole grid
 #g.toString(2)
 
