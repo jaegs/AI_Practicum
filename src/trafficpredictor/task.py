@@ -5,13 +5,12 @@ Created on Nov 13, 2012
 '''
 
 from pybrain.rl.environments.episodic import EpisodicTask
-import grid, const, math, random
+import const, math, random
 
 def state(node, period):
     return node * const.TIME_PERIODS + period
 
-def action(edge):
-    return const.DOWN if edge[1][0] > edge[0][0] else const.RIGHT
+
 
 class GPS(EpisodicTask):
     '''
@@ -29,7 +28,7 @@ class GPS(EpisodicTask):
         self.reset()
     
     def reset(self):
-        self.prev_time = random.uniform(0,24)
+        self.prev_time = random.uniform(0,const.MINS_IN_A_DAY)
         node = random.randint(0, const.NODES)
         self.reset(self.prev_time, node)
         EpisodicTask.reset(self)
@@ -42,7 +41,7 @@ class GPS(EpisodicTask):
         sensors = self.env.getSensors()
         self.current_time = sensors[const.SENSOR_TIME_POS]
         node = sensors[const.SENSOR_NODE_POS]
-        period = math.floor(self.current_time * const.PERIODS / const.HOURS)
+        period = math.floor(self.current_time * const.PERIODS / const.MINS_IN_A_DAY)
         state = state(node, period)
         return state
         

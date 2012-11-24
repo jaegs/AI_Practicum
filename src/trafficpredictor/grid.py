@@ -26,6 +26,9 @@ def int_to_node(node_num):
     b = (node_num - a) / const.GRID_SIZE
     return (b,a)
 
+def action(edge):
+    return const.DOWN if edge[1][0] > edge[0][0] else const.RIGHT
+
 class Grid(Environment):
     '''
     classdocs

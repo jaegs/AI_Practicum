@@ -5,13 +5,13 @@ Created on Nov 23, 2012
 '''
 from pybrain.rl.learners.valuebased.q import Q
 from pybrain.datasets import ReinforcementDataSet
+from egreedy import FeasibleEpsilonGreedyExplorer
 import const
 
 class GPSLearner(Q):
     def __init__(self, ):
         Q.__init__(self, const.ALPHA, const.GAMMA)
-        self.explorer.epsilon = const.EPSILON
-        self.explorer.decay = const.DECAY
+        self.explorer = FeasibleEpsilonGreedyExplorer(const.EPSILON, const.DECAY)
         self.dataset2 = ReinforcementDataSet(self.agent.indim, self.agent.outdim)
         
     
@@ -29,7 +29,7 @@ class GPSLearner(Q):
         for seq in self.dataset:
             self.dataset2.newSequence()
             for state, action, reward in seq: #add states of adjacent time periods
-                period = state % const.NODES
+                period = state % const.PERIODS
                 node = state / const.PERIODS
                 self.dataset2.addSample(node * const.PERIODS + (period + 1) % const.PERIODS, action, reward)
                 self.dataset2.addSample(node * const.PERIODS + (period - 1) % const.PERIODS, action, reward)

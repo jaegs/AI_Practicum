@@ -8,10 +8,6 @@ import math
 import random
 import const 
 
-
-
-
-
 class Edge(object):
     '''
     classdocs

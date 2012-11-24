@@ -5,16 +5,12 @@ Created on Nov 22, 2012
 '''
 
 from pybrain.rl.learners.valuebased import ActionValueTable
-import grid, const, task
-
-def state(node, period):
-    return grid.node_number(node) + const.PERIODS * period
-         
+import const, task
+import grid as g
 
 class GPSActionValueTable(ActionValueTable):
     def __init__(self):
         ActionValueTable.__init__(self, const.STATES, const.POSSIBLE_ACTIONS)
-
 
     def initialize(self, grid):
         """
@@ -26,7 +22,7 @@ class GPSActionValueTable(ActionValueTable):
             for edge in in_edges:
                 for period in xrange(const.PERIODS):
                     s = task.state(edge[0], period) #state involves node previous to current node
-                    a = task.action(edge)
+                    a = g.action(edge)
                     self.updateValue(s, a, -time)
     
 
