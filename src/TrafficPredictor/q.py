@@ -1,9 +1,10 @@
-'''
+ '''
 Created on Nov 23, 2012
 
 @author: bgj9
 '''
 from pybrain.rl.learners.valuebased.q import Q
+from pybrain.datasets import ReinforcementDataSet
 import const
 
 class GPSLearner(Q):
@@ -11,6 +12,7 @@ class GPSLearner(Q):
         Q.__init__(self, const.ALPHA, const.GAMMA)
         self.explorer.epsilon = const.EPSILON
         self.explorer.decay = const.DECAY
+        self.dataset2 = ReinforcementDataSet(self.agent.indim, self.agent.outdim)
         
     
     def learn(self):
@@ -24,16 +26,14 @@ class GPSLearner(Q):
         """
         self.alpha = const.ALPHA
         Q.learn() #do normal learning
-        samples = self.dataset
-        new_samples = []
-        for seq in samples:
-            new_seq = []
+        for seq in self.dataset:
+            self.dataset2.newSequence()
             for state, action, reward in seq: #add states of adjacent time periods
                 period = state % const.NODES
                 node = state / const.PERIODS
-                new_seq[:] = (node * const.PERIODS + (period + 1) % const.PERIODS, action, reward)
-                new_seq[:] = (node * const.PERIODS + (period - 1) % const.PERIODS, action, reward)
-            new_samples[:] = new_seq
-        self.dataset = new_samples
+                self.dataset2.addSample(node * const.PERIODS + (period + 1) % const.PERIODS, action, reward)
+                self.dataset2.addSample(node * const.PERIODS + (period - 1) % const.PERIODS, action, reward)
+        self.dataset = self.dataset2
         self.alpha = const.ALPHA_ADJ_PERIOD
         Q.learn()
+        self.dataset = self.agent.history
