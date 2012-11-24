@@ -11,7 +11,7 @@ import const
 import time
 #from pybrain.rl.environments import Environment
 
-from pybrain.rl.environments.environment import Environment
+#from pybrain.rl.environments.environment import Environment
 
 U_POS = 0
 V_POS = 1
@@ -27,7 +27,7 @@ def int_to_node(node_num):
     b = (node_num - a) / const.GRID_SIZE
     return (b,a)
 
-class Grid(Environment):
+class Grid():
     '''
     classdocs
     '''
@@ -42,17 +42,6 @@ class Grid(Environment):
         The rest of the edges will be filled in slowly so that they have similar 
         parameters to at least one of their adjacent edges.
         '''
-
-        def buildEdgeDict():
-            dictionaryBuilder = []
-            counter = 0
-            for edge in (self.grid.edges(data=True)):
-                (source,sink,data) = edge
-                dictionaryBuilder[len(dictionaryBuilder):] = [((source,sink),data[EDGE_KEY])]
-                counter += 1
-            edgeDict = dict(dictionaryBuilder)
-            return edgeDict
-    
         
         self.grid = nx.grid_2d_graph(const.GRID_SIZE, const.GRID_SIZE)
         
@@ -89,9 +78,9 @@ class Grid(Environment):
         while(rest):
             for (u,v), data in rest.items():
                 #get adjacent edges from both u and v nodes that have params initialized
-                neighbor_edges1 = [edge for edge in self.grid.out_edges_iter(nbunch=[u, v], data = True) if edge[EDGE_DATA_POS]]
-                neighbor_edges2 = [edge for edge in self.grid.in_edges_iter(nbunch=[u, v], data = True) if edge[EDGE_DATA_POS]]
-                neighbor_edges = neighbor_edges1 + neighbor_edges2
+                outgoing_neighbors = [edge for edge in self.grid.out_edges_iter(nbunch=[u, v], data = True) if edge[EDGE_DATA_POS]]
+                incoming_neighbors = [edge for edge in self.grid.in_edges_iter(nbunch=[u, v], data = True) if edge[EDGE_DATA_POS]]
+                neighbor_edges = outgoing_neighbors + incoming_neighbors
 #                print (u,v)
 #                print "Neighbor edges: ", neighbor_edges
                 if (neighbor_edges):
@@ -102,11 +91,7 @@ class Grid(Environment):
                     data[EDGE_KEY] = Edge(weight, intensity, duration)
                     data[WEIGHT_KEY] = weight
                     del rest[(u,v)]
-            #time.sleep(1)
-            #print "Rest: ", rest
-        self.edgeDict = buildEdgeDict()
         
-    
 
     
     def all_shortest_path_lengths(self):
@@ -135,24 +120,17 @@ class Grid(Environment):
         (i,j) = self.current_node
         if action == "up":
             self.current_node = (i-1,j)
-            self.curren_time = findEdge((self.current_node,(i-1,j))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+            self.curren_time = self.grid.get_edge_data((i-1,j),self.current_node)[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
         elif action == "down":
             self.current_node = (i+1,j)
-            self.curren_time = findEdge((self.current_node,(i+1,j))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+            self.curren_time = self.grid.get_edge_data(self.current_node, (i+1,j))[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
         elif action == "left":
             self.current_node = (i,j-1)
-            self.curren_time = findEdge((self.current_node,(i,j-1))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+            self.curren_time = self.grid.get_edge_data((i,j-1) ,self.current_node)[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
         elif action == "right":
             self.current_node = (i,j+1)
-            self.curren_time = findEdge((self.current_node,(i,j+1))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+            self.curren_time = self.grid.get_edge_data(self.current_node, (i,j+1))[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
         
-        
-        def findEdge(self,edgeKey):
-            (firstTuple, secondTuple) = edgeKey
-            if edgeKey in self.grid.edgeDict:
-                return self.grid.edgeDict[edgeKey]
-            else:
-                return self.grid.edgeDict[(secondTuple,firstTuple)]
     
     def reset(self, time_of_day, start_node):
         self.time_of_day = time_of_day
@@ -166,19 +144,11 @@ class Grid(Environment):
         print printedLine
         
     def findAppropriateEdge(self,i,j,time):
-        weight = ""
-        if ((i,j),(i,j+1)) in self.edgeDict:
-            weight = "%.5f" % self.edgeDict[((i,j),(i,j+1))].travelTime(time)
-        else:
-            weight = "%.5f" % self.edgeDict[((i,j+1),(i,j))].travelTime(time)
+        weight = "%.5f" % self.grid.get_edge_data((i,j),(i,j+1))[EDGE_KEY].travelTime(time) 
         return weight
     
     def findAppropriateVerticalEdge(self,i,j,k,l,time):
-        weight = ""
-        if ((i,j),(k,l)) in self.edgeDict:
-            weight = "%.5f" % self.edgeDict[((i,j),(k,l))].travelTime(time)
-        else:
-            weight = "%.5f" % self.edgeDict[((k,l),(i,j))].travelTime(time)
+        weight = "%.5f" % self.grid.get_edge_data((i,j),(k,l))[EDGE_KEY].travelTime(time)
         return weight
     
     def toString(self, time):
@@ -211,6 +181,9 @@ g = Grid()
 
 #Print the whole grid
 g.toString(2)
+print g.grid.get_edge_data((1,1), (1,2))[EDGE_KEY].travelTime(2)
+
+
 
 
     
