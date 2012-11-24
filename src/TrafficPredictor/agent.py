@@ -4,9 +4,9 @@ Created on Nov 13, 2012
 @author: Benjamin
 '''
 
-from pybrain.rl.agents.learning import LearningAgent
+from pybrain.rl.agents.learning import LearningAgent, LoggingAgent
 
-class DrivingAgent(LearningAgent):
+class DrivingLearningAgent(LearningAgent):
     '''
     classdocs
     '''
@@ -17,3 +17,10 @@ class DrivingAgent(LearningAgent):
         Constructor
         '''
         LearningAgent.__init__(self, controller, learner)
+        
+class DrivingBaselineAgent(LoggingAgent):
+    def __init__(self, controller, learner):
+        '''
+        Constructor
+        '''
+        LoggingAgent.__init__(self, controller, learner) 

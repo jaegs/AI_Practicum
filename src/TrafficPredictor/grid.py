@@ -11,16 +11,13 @@ import const
 import time
 #from pybrain.rl.environments import Environment
 
-#from pybrain.utilities import Named
-#from pybrain.rl.environments.environment import Environment
+from pybrain.rl.environments.environment import Environment
 
 U_POS = 0
 V_POS = 1
 EDGE_DATA_POS = 2
 EDGE_KEY = "object"
 WEIGHT_KEY = "weight"
-
-
 
 def node_number(node):
     a, b = node
@@ -30,7 +27,7 @@ def int_to_node(node_num):
     b = (node_num - a) / const.GRID_SIZE
     return (b,a)
 
-class Grid():
+class Grid(Environment):
     '''
     classdocs
     '''

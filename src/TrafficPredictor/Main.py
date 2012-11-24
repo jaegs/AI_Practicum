@@ -6,7 +6,7 @@ Created on Nov 22, 2012
 
 from grid import Grid
 from task import GPS
-from agent import DrivingAgent
+from agent import DrivingLearningAgent
 from q import GPSLearner
 from experiment import TripExperiment
 from actionValueTable import GPSActionValueTable
@@ -17,8 +17,13 @@ if __name__ == '__main__':
     controller = GPSActionValueTable()
     controller.initialize(environment)
     learner = GPSLearner()
-    agent = DrivingAgent(controller, learner)
+    agent = DrivingLearningAgent(controller, learner)
     task = GPS(environment)
     
     experiment = TripExperiment(task, agent)
+    
+    for _ in const.TRIALS:
+        experiment.doEpisodes()
+        agent.learn()
+        agent.reset()
     
