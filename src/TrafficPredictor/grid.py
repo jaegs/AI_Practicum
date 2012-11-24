@@ -8,6 +8,7 @@ import networkx as nx
 from random import *
 from edge import Edge
 import const
+#from pybrain.rl.environments import Environment
 
 from pybrain.rl.environments.environment import Environment
 
@@ -20,6 +21,10 @@ WEIGHT_KEY = "weight"
 def node_number(node):
     a, b = node
     return a + const.GRID_SIZE * b
+def int_to_node(node_num):
+    a = node_num % const.GRID_SIZE
+    b = (node_num - a) / const.GRID_SIZE
+    return (b,a)
 
 class Grid(Environment):
     '''
@@ -47,6 +52,7 @@ class Grid(Environment):
             edgeDict = dict(dictionaryBuilder)
             return edgeDict
     
+        
         self.grid = nx.grid_2d_graph(const.GRID_SIZE, const.GRID_SIZE)
         
         #Makes the graph directed so that edges either go in increasing x or y
@@ -57,7 +63,7 @@ class Grid(Environment):
             if(bx < ax or by < ay):
                 to_remove.append(e)
         self.grid.remove_edges_from(to_remove)
-        print self.grid.edges()
+      
         #TODO - directed edges breaks printing code
         
         edges = self.grid.edges(data = True)
@@ -107,23 +113,43 @@ class Grid(Environment):
             length = nx.shortest_path_length(self.grid, n, const.DESTINATION, WEIGHT_KEY)
             lengths.append((n, length))
         return lengths
-    
+   
     def getSensors(self):
         """
-            See pybrain/rl/environments/environment.py
-            :rtype: numpy array double
+            Return: (current time of the day, current node) tuple
         """
-        pass
+        return (self.time_of_day, node_number(self.current_node))
     
-    def performAction(self):
+    def performAction(self, action):
         """
-            :key action: an action that should be executed in the Environment. 
-            :type action: by default, this is assumed to be a numpy array of doubles
+            :key action: An action that should be executed in the environment
+            :type action:A string: "up" | "down" | "left" | "right"
         """
-        pass
+        (i,j) = self.current_node
+        if action == "up":
+            self.current_node = (i-1,j)
+            self.curren_time = findEdge((self.current_node,(i-1,j))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+        elif action == "down":
+            self.current_node = (i+1,j)
+            self.curren_time = findEdge((self.current_node,(i+1,j))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+        elif action == "left":
+            self.current_node = (i,j-1)
+            self.curren_time = findEdge((self.current_node,(i,j-1))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+        elif action == "right":
+            self.current_node = (i,j+1)
+            self.curren_time = findEdge((self.current_node,(i,j+1))).travelTime(self.current_time) / const.PERIOD_IN_MINS
+        
+        
+        def findEdge(self,edgeKey):
+            (firstTuple, secondTuple) = edgeKey
+            if edgeKey in self.grid.edgeDict:
+                return self.grid.edgeDict[edgeKey]
+            else:
+                return self.grid.edgeDict[(secondTuple,firstTuple)]
     
-    def reset(self):
-        pass
+    def reset(self, time_of_day, start_node):
+        self.time_of_day = time_of_day
+        self.current_node = int_to_node(start_node)
 
          
     def printVerticalEdges(self,gridWidth):
@@ -132,7 +158,7 @@ class Grid(Environment):
             printedLine = printedLine + '                   |'  
         print printedLine
         
-    def findAppropriateEdge(self,i,j, grid, time):
+    def findAppropriateEdge(self,i,j,time):
         weight = ""
         if ((i,j),(i,j+1)) in self.edgeDict:
             weight = "%.5f" % self.edgeDict[((i,j),(i,j+1))].travelTime(time)
@@ -140,7 +166,7 @@ class Grid(Environment):
             weight = "%.5f" % self.edgeDict[((i,j+1),(i,j))].travelTime(time)
         return weight
     
-    def findAppropriateVerticalEdge(self,i,j,k,l,grid,time):
+    def findAppropriateVerticalEdge(self,i,j,k,l,time):
         weight = ""
         if ((i,j),(k,l)) in self.edgeDict:
             weight = "%.5f" % self.edgeDict[((i,j),(k,l))].travelTime(time)
@@ -152,20 +178,20 @@ class Grid(Environment):
         i = 0
         while i < const.GRID_SIZE:
             j=0
-            currentLine = '('+str(i)+',0)' + "----" + self.findAppropriateEdge(i,0,g,time) + "----" + '('+str(i)+',1)'
+            currentLine = '('+str(i)+',0)' + "----" + self.findAppropriateEdge(i,0,time) + "----" + '('+str(i)+',1)'
             while j < const.GRID_SIZE - 2:
                 j += 1
-                currentLine = currentLine + '----' + self.findAppropriateEdge(i,j,g,time) + "----" + '('+str(i)+','+str(j+1)+')'
+                currentLine = currentLine + '----' + self.findAppropriateEdge(i,j,time) + "----" + '('+str(i)+','+str(j+1)+')'
                 
             print currentLine
             
             if i+1 < const.GRID_SIZE:
                 self.printVerticalEdges(const.GRID_SIZE)
-                verticalEdges = str(self.findAppropriateVerticalEdge(i, 0, i+1, 0,g,time))
+                verticalEdges = str(self.findAppropriateVerticalEdge(i, 0, i+1, 0,time))
                 a = 1
                 while a < const.GRID_SIZE:
                     verticalEdges = verticalEdges + '            ' + \
-                        str(self.findAppropriateVerticalEdge(i, a, i+1, a,g,time))
+                        str(self.findAppropriateVerticalEdge(i, a, i+1, a,time))
                     a += 1
                 print verticalEdges 
                 self.printVerticalEdges(const.GRID_SIZE)
@@ -175,6 +201,7 @@ class Grid(Environment):
 
 #Create the grid
 g = Grid()
+
 #Print the whole grid
 #g.toString(2)
 
