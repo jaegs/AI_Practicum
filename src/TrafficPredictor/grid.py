@@ -11,7 +11,7 @@ import const
 import time
 #from pybrain.rl.environments import Environment
 
-#from pybrain.rl.environments.environment import Environment
+from pybrain.rl.environments.environment import Environment
 
 U_POS = 0
 V_POS = 1
@@ -27,7 +27,7 @@ def int_to_node(node_num):
     b = (node_num - a) / const.GRID_SIZE
     return (b,a)
 
-class Grid():
+class Grid(Environment):
     '''
     classdocs
     '''
