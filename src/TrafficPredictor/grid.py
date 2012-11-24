@@ -24,6 +24,10 @@ WEIGHT_KEY = "weight"
 def node_number(node):
     a, b = node
     return a + const.GRID_SIZE * b
+def int_to_node(node_num):
+    a = node_num % const.GRID_SIZE
+    b = (node_num - a) / const.GRID_SIZE
+    return (b,a)
 
 class Grid():
     '''
@@ -117,7 +121,7 @@ class Grid():
         """
             Return: (current time of the day, current node) tuple
         """
-        return (self.time_of_day, self.current_node)
+        return (self.time_of_day, node_number(self.current_node))
     
     def performAction(self, action):
         """
@@ -148,7 +152,7 @@ class Grid():
     
     def reset(self, time_of_day, start_node):
         self.time_of_day = time_of_day
-        self.current_node = start_node
+        self.current_node = int_to_node(start_node)
 
          
     def printVerticalEdges(self,gridWidth):
@@ -157,7 +161,7 @@ class Grid():
             printedLine = printedLine + '                   |'  
         print printedLine
         
-    def findAppropriateEdge(self,i,j, grid, time):
+    def findAppropriateEdge(self,i,j,time):
         weight = ""
         if ((i,j),(i,j+1)) in self.edgeDict:
             weight = "%.5f" % self.edgeDict[((i,j),(i,j+1))].travelTime(time)
@@ -165,7 +169,7 @@ class Grid():
             weight = "%.5f" % self.edgeDict[((i,j+1),(i,j))].travelTime(time)
         return weight
     
-    def findAppropriateVerticalEdge(self,i,j,k,l,grid,time):
+    def findAppropriateVerticalEdge(self,i,j,k,l,time):
         weight = ""
         if ((i,j),(k,l)) in self.edgeDict:
             weight = "%.5f" % self.edgeDict[((i,j),(k,l))].travelTime(time)
@@ -177,20 +181,20 @@ class Grid():
         i = 0
         while i < const.GRID_SIZE:
             j=0
-            currentLine = '('+str(i)+',0)' + "----" + self.findAppropriateEdge(i,0,g,time) + "----" + '('+str(i)+',1)'
+            currentLine = '('+str(i)+',0)' + "----" + self.findAppropriateEdge(i,0,time) + "----" + '('+str(i)+',1)'
             while j < const.GRID_SIZE - 2:
                 j += 1
-                currentLine = currentLine + '----' + self.findAppropriateEdge(i,j,g,time) + "----" + '('+str(i)+','+str(j+1)+')'
+                currentLine = currentLine + '----' + self.findAppropriateEdge(i,j,time) + "----" + '('+str(i)+','+str(j+1)+')'
                 
             print currentLine
             
             if i+1 < const.GRID_SIZE:
                 self.printVerticalEdges(const.GRID_SIZE)
-                verticalEdges = str(self.findAppropriateVerticalEdge(i, 0, i+1, 0,g,time))
+                verticalEdges = str(self.findAppropriateVerticalEdge(i, 0, i+1, 0,time))
                 a = 1
                 while a < const.GRID_SIZE:
                     verticalEdges = verticalEdges + '            ' + \
-                        str(self.findAppropriateVerticalEdge(i, a, i+1, a,g,time))
+                        str(self.findAppropriateVerticalEdge(i, a, i+1, a,time))
                     a += 1
                 print verticalEdges 
                 self.printVerticalEdges(const.GRID_SIZE)
@@ -200,7 +204,7 @@ class Grid():
 
 #Create the grid
 g = Grid()
-print "Hello worls"
+
 #Print the whole grid
 #g.toString(2)
 
