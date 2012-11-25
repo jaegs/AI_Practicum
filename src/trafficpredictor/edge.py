@@ -6,13 +6,14 @@ Created on Oct 19, 2012
 
 import math
 import random
-import const 
+import const
+import scipy.stats as ss
 
 class Edge(object):
     '''
     classdocs
     '''
-
+    
     def __init__(self, weight, duration, intensity):
         '''
         Constructor
@@ -22,7 +23,10 @@ class Edge(object):
         self.duration = duration
         
     def travelTime(self, time):
-        ##Sometimes we get negative values. Maybe use the absolute value?
-        return  self.weight + max(0,random.normalvariate(\
-                self.intensity * math.exp(-1 * self.duration * (time - const.MID_DAY)**2), \
-                const.NOISE_STD_DEV))
+
+        #normal dist generator truncated on [0,+inf]
+        noise = ss.truncnorm.rvs(0.0, float("inf"), scale = const.NOISE_STD_DEV)
+        return self.weight + \
+            (self.intensity + noise) * math.exp(-1. * ((time - float(const.PERIODS) / 2.) / self.duration) ** 2.) \
+
+
