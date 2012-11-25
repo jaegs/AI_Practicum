@@ -23,6 +23,7 @@ class Edge(object):
         
     def travelTime(self, time):
         ##Sometimes we get negative values. Maybe use the absolute value?
-        return random.normalvariate(\
-                self.weight + self.intensity * math.exp(-1 * self.duration * time), \
-                const.NOISE_STD_DEV)
+        print
+        return  self.weight + max(0,random.normalvariate(\
+                self.intensity * math.exp(-1 * self.duration * (time - const.MID_DAY)**2), \
+                const.NOISE_STD_DEV))
