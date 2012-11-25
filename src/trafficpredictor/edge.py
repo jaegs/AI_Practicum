@@ -24,11 +24,10 @@ class Edge(object):
         
     def travelTime(self, time):
         #normal dist generator truncated on [0,+inf]
-        #may want to make scale change throughout day
         noise = ss.truncnorm.rvs(0.0, float("inf"), scale = const.NOISE_STD_DEV)
         return self.weight + \
-            self.intensity * math.exp(-1. * ((time - float(const.PERIODS) / 2.) / self.duration) ** 2.) \
-            + noise
+            (self.intensity + noise) * math.exp(-1. * ((time - float(const.PERIODS) / 2.) / self.duration) ** 2.) \
+
             
             
 #ex = Edge(30., 10., 10.)
