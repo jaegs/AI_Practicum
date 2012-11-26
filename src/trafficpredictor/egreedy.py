@@ -35,9 +35,9 @@ class FeasibleEpsilonGreedyExplorer(DiscreteExplorer):
         assert self.module
 
         if random.random() < self.epsilon:
-            #only the actions that have a Q value > -infinity are valid 
+            #only the actions that have a Q value > -infinity are valid
             actions = [a for a in self.module.getActionValues(self.state) if a > float("-inf")]
-            outbuf[:] = random.choice[actions]
+            outbuf[:] = random.choice(actions)
         else:
             outbuf[:] = inbuf
 

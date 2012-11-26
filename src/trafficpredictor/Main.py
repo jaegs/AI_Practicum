@@ -26,6 +26,6 @@ if __name__ == '__main__':
     
     for _ in range(const.TRIALS):
         experiment.doEpisodes()
-        #agent.learn()
-        #agent.reset()
+        agent.learn()
+        agent.reset()
     
