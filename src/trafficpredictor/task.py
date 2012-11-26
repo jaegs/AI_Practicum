@@ -8,7 +8,7 @@ from pybrain.rl.environments.episodic import EpisodicTask
 import const, math, random, grid
 
 def get_state(node, period):
-    return node * const.TIME_PERIODS + period
+    return [node * const.TIME_PERIODS + period]
 
 
 

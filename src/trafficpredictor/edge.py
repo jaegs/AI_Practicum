@@ -32,3 +32,4 @@ class Edge(object):
 #ex = Edge(30., 10., 10.)
 #for i in xrange(48):
 #    print ex.travelTime(float(i))
+

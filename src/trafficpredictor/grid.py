@@ -121,22 +121,24 @@ class Grid(Environment):
             :type action:A string: "up" | "down" | "left" | "right"
         """
         def jump(node1, node2):
-            self.curren_time = self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
+            self.curren_time = self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.time_of_day) / const.PERIOD_IN_MINS
             
         
         (i,j) = self.current_node
         if action == "up":
-            self.current_node = (i-1,j)
             jump((i-1,j),self.current_node)
+            self.current_node = (i-1,j)
         elif action == const.DOWN:
-            self.current_node = (i+1,j)
-            jump(self.current_node, (i+1,j))
+            if i+1 < const.GRID_SIZE:
+                jump(self.current_node, (i+1,j))
+                self.current_node = (i+1,j)
         elif action == const.LEFT:
-            self.current_node = (i,j-1)
-            jump((i,j-1) ,self.current_node)
+            if j-1 >= 0:
+                jump((i,j-1) ,self.current_node)
+                self.current_node = (i,j-1)
         elif action == "right":
-            self.current_node = (i,j+1)
             jump(self.current_node, (i,j+1))
+            self.current_node = (i,j+1)
         
     
     def reset(self):
@@ -192,10 +194,10 @@ class Grid(Environment):
 
 
 
-#Create the grid
-g = Grid()
-
-#Print the whole grid
+##Create the grid
+#g = Grid()
+#
+##Print the whole grid
 #g.toString(2,False)
 #g.toString(2,True)
 

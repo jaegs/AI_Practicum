@@ -25,7 +25,7 @@ class GPSLearner(Q):
             traffic at 5:00. Hence, we can use an observation at 4:30 to update 5:00.
         """
         self.alpha = const.ALPHA
-        Q.learn() #do normal learning
+        Q.learn(self) #do normal learning
         for seq in self.dataset:
             self.dataset2.newSequence()
             for state, action, reward in seq: #add states of adjacent time periods
@@ -36,6 +36,6 @@ class GPSLearner(Q):
         temp = self.dataset 
         self.dataset = self.dataset2       
         self.alpha = const.ALPHA_ADJ_PERIOD
-        Q.learn()
+        Q.learn(self)
         self.dataset = temp
 #GPSLearner().learn()
