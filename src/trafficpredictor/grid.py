@@ -67,9 +67,9 @@ class Grid(Environment):
         rest = edges[division:]
         for u, v, data in seeds:
 
-            weight = randint(0, const.MAX_WEIGHT)
-            intensity = randint(0, const.MAX_INTENSITY)
-            duration = randint(0, const.MAX_DURATION)
+            weight = randint(1, const.MAX_WEIGHT)
+            intensity = randint(1, const.MAX_INTENSITY)
+            duration = randint(1, const.MAX_DURATION)
 
             #makes the node object a property of the edge
             data[EDGE_KEY] = Edge(weight, duration, intensity)
