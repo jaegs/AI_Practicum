@@ -27,8 +27,9 @@ class Edge(object):
         #normal dist generator truncated on [0,+inf]
         noise = ss.truncnorm.rvs(0.0, float("inf"), scale = const.NOISE_STD_DEV)
         return self.weight + \
-            (self.intensity + noise) * math.exp(-1. * ((time - float(const.PERIODS) / 2.)) ** 2.) \
-#        return self.weight + \
-#            (self.intensity + noise) * math.exp(-1. * ((time - float(const.PERIODS) / 2.) / self.duration) ** 2.) \
-
+            (self.intensity + noise) * math.exp(-1. * ((time - float(const.PERIODS) / 2.) / self.duration) ** 2.) \
+         
+#ex = Edge(30., 10., 10.)
+#for i in xrange(48):
+#    print ex.travelTime(float(i))
 
