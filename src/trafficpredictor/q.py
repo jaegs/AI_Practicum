@@ -1,4 +1,4 @@
- '''
+'''
 Created on Nov 23, 2012
 
 @author: bgj9
@@ -12,7 +12,7 @@ class GPSLearner(Q):
     def __init__(self, ):
         Q.__init__(self, const.ALPHA, const.GAMMA)
         self.explorer = FeasibleEpsilonGreedyExplorer(const.EPSILON, const.DECAY)
-        self.dataset2 = ReinforcementDataSet(self.agent.indim, self.agent.outdim)
+        self.dataset2 = ReinforcementDataSet(const.STATES, const.POSSIBLE_ACTIONS)
         
     
     def learn(self):
@@ -33,7 +33,9 @@ class GPSLearner(Q):
                 node = state / const.PERIODS
                 self.dataset2.addSample(node * const.PERIODS + (period + 1) % const.PERIODS, action, reward)
                 self.dataset2.addSample(node * const.PERIODS + (period - 1) % const.PERIODS, action, reward)
-        self.dataset = self.dataset2
+        temp = self.dataset 
+        self.dataset = self.dataset2       
         self.alpha = const.ALPHA_ADJ_PERIOD
         Q.learn()
-        self.dataset = self.agent.history
+        self.dataset = temp
+#GPSLearner().learn()

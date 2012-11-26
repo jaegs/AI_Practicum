@@ -7,7 +7,7 @@ Created on Nov 13, 2012
 from pybrain.rl.environments.episodic import EpisodicTask
 import const, math, random, grid
 
-def state(node, period):
+def get_state(node, period):
     return node * const.TIME_PERIODS + period
 
 
@@ -25,12 +25,13 @@ class GPS(EpisodicTask):
         EpisodicTask.__init__(self, environment)
         self.prev_time = 0
         self.current_time = 0 
+        self.environment = environment
         self.reset()
     
     def reset(self):
-        self.prev_time = random.uniform(0,const.MINS_IN_A_DAY)
+        self.prev_time = random.uniform(0,const.PERIODS)
         node = random.randint(0, const.NODES)
-        self.reset(self.prev_time, node)
+        self.environment.reset_grid(self.prev_time, node)
         EpisodicTask.reset(self)
         
     def getReward(self):
@@ -39,13 +40,13 @@ class GPS(EpisodicTask):
     def getObservation(self):
         self.prev_time = self.current_time
         self.current_time, node = self.env.getSensors()
-        period = math.floor(self.current_time * const.PERIODS / const.MINS_IN_A_DAY)
-        state = state(node, period)
+        period = math.floor(self.current_time)
+        state = get_state(node, period)
         return state
         
         
     def isFinished(self):
-        return self.current_state == grid.node_number(const.DESTINATION)
+        return self.environment.current_node == grid.node_number(const.DESTINATION)
     
     
         

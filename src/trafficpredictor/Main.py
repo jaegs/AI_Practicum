@@ -16,14 +16,16 @@ if __name__ == '__main__':
     environment = Grid()
     controller = GPSActionValueTable()
     controller.initialize(environment)
+    
     learner = GPSLearner()
+    
     agent = DrivingLearningAgent(controller, learner)
     task = GPS(environment)
     
     experiment = TripExperiment(task, agent)
     
-    for _ in const.TRIALS:
+    for _ in range(const.TRIALS):
         experiment.doEpisodes()
-        agent.learn()
-        agent.reset()
+        #agent.learn()
+        #agent.reset()
     

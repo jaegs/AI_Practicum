@@ -120,22 +120,29 @@ class Grid(Environment):
             :key action: An action that should be executed in the environment
             :type action:A string: "up" | "down" | "left" | "right"
         """
+        def jump(node1, node2):
+            self.curren_time = self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
+            
+        
         (i,j) = self.current_node
         if action == "up":
             self.current_node = (i-1,j)
-            self.curren_time = self.grid.get_edge_data((i-1,j),self.current_node)[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
-        elif action == "down":
+            jump((i-1,j),self.current_node)
+        elif action == const.DOWN:
             self.current_node = (i+1,j)
-            self.curren_time = self.grid.get_edge_data(self.current_node, (i+1,j))[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
-        elif action == "left":
+            jump(self.current_node, (i+1,j))
+        elif action == const.LEFT:
             self.current_node = (i,j-1)
-            self.curren_time = self.grid.get_edge_data((i,j-1) ,self.current_node)[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
+            jump((i,j-1) ,self.current_node)
         elif action == "right":
             self.current_node = (i,j+1)
-            self.curren_time = self.grid.get_edge_data(self.current_node, (i,j+1))[EDGE_KEY].travelTime(self.current_time) / const.PERIOD_IN_MINS
+            jump(self.current_node, (i,j+1))
         
     
-    def reset(self, time_of_day, start_node):
+    def reset(self):
+        pass
+    
+    def reset_grid(self, time_of_day, start_node):
         self.time_of_day = time_of_day
         self.current_node = int_to_node(start_node)
 
@@ -146,32 +153,38 @@ class Grid(Environment):
             printedLine = printedLine + '                   |'  
         print printedLine
         
-    def findAppropriateEdge(self,i,j,time):
-        weight = "%.5f" % self.grid.get_edge_data((i,j),(i,j+1))[EDGE_KEY].travelTime(time) 
+    def findAppropriateEdge(self,i,j,time, isTraffic):
+        if isTraffic:
+            weight = "%.5f" % self.grid.get_edge_data((i,j),(i,j+1))[EDGE_KEY].travelTime(time)
+        else:
+            weight = "%.5f" % self.grid.get_edge_data((i,j),(i,j+1))[EDGE_KEY].weight 
         return weight
     
-    def findAppropriateVerticalEdge(self,i,j,k,l,time):
-        weight = "%.5f" % self.grid.get_edge_data((i,j),(k,l))[EDGE_KEY].travelTime(time)
+    def findAppropriateVerticalEdge(self,i,j,k,l,time, isTraffic):
+        if isTraffic:
+            weight = "%.5f" % self.grid.get_edge_data((i,j),(k,l))[EDGE_KEY].travelTime(time)
+        else:
+            weight = "%.5f" % self.grid.get_edge_data((i,j),(k,l))[EDGE_KEY].weight
         return weight
     
-    def toString(self, time):
+    def toString(self, time, isTraffic):
         i = 0
         while i < const.GRID_SIZE:
             j=0
-            currentLine = '('+str(i)+',0)' + "----" + self.findAppropriateEdge(i,0,time) + "----" + '('+str(i)+',1)'
+            currentLine = '('+str(i)+',0)' + "----" + self.findAppropriateEdge(i,0,time,isTraffic) + "----" + '('+str(i)+',1)'
             while j < const.GRID_SIZE - 2:
                 j += 1
-                currentLine = currentLine + '----' + self.findAppropriateEdge(i,j,time) + "----" + '('+str(i)+','+str(j+1)+')'
+                currentLine = currentLine + '----' + self.findAppropriateEdge(i,j,time, isTraffic) + "----" + '('+str(i)+','+str(j+1)+')'
                 
             print currentLine
             
             if i+1 < const.GRID_SIZE:
                 self.printVerticalEdges(const.GRID_SIZE)
-                verticalEdges = str(self.findAppropriateVerticalEdge(i, 0, i+1, 0,time))
+                verticalEdges = str(self.findAppropriateVerticalEdge(i, 0, i+1, 0,time, isTraffic))
                 a = 1
                 while a < const.GRID_SIZE:
                     verticalEdges = verticalEdges + '            ' + \
-                        str(self.findAppropriateVerticalEdge(i, a, i+1, a,time))
+                        str(self.findAppropriateVerticalEdge(i, a, i+1, a,time,isTraffic))
                     a += 1
                 print verticalEdges 
                 self.printVerticalEdges(const.GRID_SIZE)
@@ -183,8 +196,10 @@ class Grid(Environment):
 g = Grid()
 
 #Print the whole grid
-g.toString(2)
-print g.grid.get_edge_data((1,1), (1,2))[EDGE_KEY].travelTime(2)
+#g.toString(2,False)
+#g.toString(2,True)
+
+
 
 
 
