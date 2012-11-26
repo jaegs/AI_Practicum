@@ -9,6 +9,7 @@ from random import *
 from edge import Edge
 import const
 import time
+import numpy as np
 #from pybrain.rl.environments import Environment
 
 from pybrain.rl.environments.environment import Environment
@@ -24,11 +25,19 @@ def node_number(node):
     return a + const.GRID_SIZE * b
 def int_to_node(node_num):
     a = node_num % const.GRID_SIZE
-    b = (node_num - a) / const.GRID_SIZE
+    b = np.floor(node_num / const.GRID_SIZE)
     return (b,a)
 
 def action(edge):
     return const.DOWN if edge[1][0] > edge[0][0] else const.RIGHT
+
+class InvalidActionException(Exception):
+    def __init__(self, node, action):
+        Exception.__init__(self)
+        self.action = action
+        self.node = node
+    def __str__(self):
+        return "Node: " + repr(self.node) + " Action: " + repr(self.action)
 
 class Grid(Environment):
     '''
@@ -122,8 +131,8 @@ class Grid(Environment):
         """
         def jump(node1, node2):
             self.curren_time = self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.time_of_day) / const.PERIOD_IN_MINS
-            
-        
+
+        #print ("Action", action)
         (i,j) = self.current_node
         if action == "up":
             jump((i-1,j),self.current_node)
@@ -132,13 +141,20 @@ class Grid(Environment):
             if i+1 < const.GRID_SIZE:
                 jump(self.current_node, (i+1,j))
                 self.current_node = (i+1,j)
-        elif action == const.LEFT:
+            else:
+                raise InvalidActionException(self.current_node, action)
+        elif action == "left":
             if j-1 >= 0:
                 jump((i,j-1) ,self.current_node)
                 self.current_node = (i,j-1)
-        elif action == "right":
+            else:
+                raise InvalidActionException(self.current_node, action)
+        elif action == const.RIGHT:
             jump(self.current_node, (i,j+1))
             self.current_node = (i,j+1)
+        else:
+            raise InvalidActionException(self.current_node, action)
+            
         
     
     def reset(self):
@@ -147,6 +163,7 @@ class Grid(Environment):
     def reset_grid(self, time_of_day, start_node):
         self.time_of_day = time_of_day
         self.current_node = int_to_node(start_node)
+        #print("Start node", self.current_node)
 
          
     def printVerticalEdges(self,gridWidth):
