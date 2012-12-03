@@ -30,13 +30,14 @@ class GPS(EpisodicTask):
     
     def reset(self):
         self.prev_time = random.uniform(0,const.PERIODS)
-
+        self.start_time = self.prev_time
         #choose a random node that is not the destination
-        node = const.DESTINATION
-        while(node != const.DESTINATION):
+        node = grid.node_number(const.DESTINATION)
+        while(node == grid.node_number(const.DESTINATION)):
             node = random.randint(0, const.NODES - 1)
+            print "Infinite"
+        self.start_node = node 
         self.env.reset_grid(self.prev_time, node)
-
         EpisodicTask.reset(self)
         
     def getReward(self):
