@@ -27,6 +27,8 @@ class GPSActionValueTable(ActionValueTable):
                     s = task.get_state(g.node_number(edge[0]), period) #state involves node previous to current node
                     a = g.action(edge)
                     self.updateValue(s, a, -time)
+                    
+        
     
 # TEST
 newGrid = Grid()

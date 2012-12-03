@@ -39,6 +39,8 @@ class FeasibleEpsilonGreedyExplorer(DiscreteExplorer):
             actionValues = self.module.getActionValues(self.state)
             #print(actionValues)
             actions = [a for a in xrange(len(actionValues)) if actionValues[a] > float("-inf")]
+            print "Action values", actionValues
+            print "Actions", actions
             outbuf[:] = random.choice(actions)
         else:
             outbuf[:] = inbuf

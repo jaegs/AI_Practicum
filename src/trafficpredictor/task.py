@@ -8,6 +8,9 @@ from pybrain.rl.environments.episodic import EpisodicTask
 import const, math, random, grid
 
 def get_state(node, period):
+    
+    print "Node ", node
+    print "Period ", period
     return [node * const.TIME_PERIODS + period]
 
 
@@ -27,8 +30,9 @@ class GPS(EpisodicTask):
     
     def reset(self):
         self.prev_time = random.uniform(0,const.PERIODS)
-        node = random.randint(0, const.NODES - 1)
-        self.env.reset_grid(self.prev_time, node)
+        self.start_time = self.prev_time
+        self.start_node = random.randint(0, const.NODES - 1)
+        self.env.reset_grid(self.prev_time, self.start_node)
         EpisodicTask.reset(self)
         
     def getReward(self):
@@ -37,13 +41,17 @@ class GPS(EpisodicTask):
     def getObservation(self):
         self.prev_time = self.current_time
         self.current_time, node = self.env.getSensors()
-        period = math.floor(self.current_time)
+        period = math.floor(self.current_time) 
         state = get_state(node, period)
         return state
         
         
     def isFinished(self):
-        return self.env.current_node == const.DESTINATION
+        if self.env.current_node == const.DESTINATION:
+            self.total_time = self.current_time - self.start_time
+            return True
+        else:
+            return False
     
     
         

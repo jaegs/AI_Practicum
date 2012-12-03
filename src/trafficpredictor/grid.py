@@ -25,8 +25,8 @@ def node_number(node):
     return a + const.GRID_SIZE * b
 def int_to_node(node_num):
     a = node_num % const.GRID_SIZE
-    b = np.floor(node_num / const.GRID_SIZE)
-    return (b,a)
+    b = int(np.floor(node_num / const.GRID_SIZE))
+    return (a,b)
 
 def action(edge):
     return const.DOWN if edge[1][0] > edge[0][0] else const.RIGHT
@@ -130,7 +130,8 @@ class Grid(Environment):
             :type action:A string: "up" | "down" | "left" | "right"
         """
         def jump(node1, node2):
-            self.curren_time = self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.time_of_day) / const.PERIOD_IN_MINS
+            print self.grid.get_edge_data(node1,node2)[EDGE_KEY]
+            self.time_of_day += self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.time_of_day) / const.PERIOD_IN_MINS
 
         #print ("Action", action)
         (i,j) = self.current_node
@@ -150,8 +151,11 @@ class Grid(Environment):
             else:
                 raise InvalidActionException(self.current_node, action)
         elif action == const.RIGHT:
-            jump(self.current_node, (i,j+1))
-            self.current_node = (i,j+1)
+            if j+1 >= 0:
+                jump(self.current_node, (i,j+1))
+                self.current_node = (i,j+1)
+            else:
+                raise InvalidActionException(self.current_node, action)
         else:
             raise InvalidActionException(self.current_node, action)
             
@@ -162,6 +166,7 @@ class Grid(Environment):
     
     def reset_grid(self, time_of_day, start_node):
         self.time_of_day = time_of_day
+        self.current_time = self.time_of_day
         self.current_node = int_to_node(start_node)
         #print("Start node", self.current_node)
 
@@ -211,12 +216,14 @@ class Grid(Environment):
 
 
 
-##Create the grid
+###Create the grid
 #g = Grid()
 #
 ##Print the whole grid
 #g.toString(2,False)
 #g.toString(2,True)
+
+
 
 
 
