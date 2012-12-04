@@ -65,8 +65,6 @@ class Grid(Environment):
             if(bx < ax or by < ay):
                 to_remove.append(e)
         self.grid.remove_edges_from(to_remove)
-      
-        #TODO - directed edges breaks printing code
         
         edges = self.grid.edges(data = True)
         shuffle(edges)
@@ -130,7 +128,7 @@ class Grid(Environment):
             :type action:A string: "up" | "down" | "left" | "right"
         """
         def jump(node1, node2):
-            print self.grid.get_edge_data(node1,node2)[EDGE_KEY]
+            self.total_jumps += 1
             self.time_of_day += self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.time_of_day) / const.PERIOD_IN_MINS
 
         #print ("Action", action)
@@ -168,6 +166,7 @@ class Grid(Environment):
         self.time_of_day = time_of_day
         self.current_time = self.time_of_day
         self.current_node = int_to_node(start_node)
+        self.total_jumps = 0
         #print("Start node", self.current_node)
 
          

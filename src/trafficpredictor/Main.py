@@ -11,9 +11,11 @@ from q import GPSLearner
 from experiment import TripExperiment
 from actionValueTable import GPSActionValueTable
 import const
-import grid as gri
+import matplotlib.pyplot as plt
+
 
 if __name__ == '__main__':
+    iterations = 0
     environment = Grid()
     controller = GPSActionValueTable()
     controller.initialize(environment)
@@ -24,17 +26,30 @@ if __name__ == '__main__':
     task = GPS(environment)
     
     experiment = TripExperiment(task, agent)
-    
+    travel_times, iteration_nums = [], []
     for _ in range(const.TRIALS):
         experiment.doEpisodes()
-        print "Start Node", gri.int_to_node(task.start_node)
-        print "Start Time:", task.start_time
-        print "End Time:", task.current_time
-        print "Total Time:", task.total_time, "\n\n\n"
+#        print "Iteration:", iterations
+#        print "Total Jumps:", environment.total_jumps
+#        print "Total Time:", task.total_time, "\n\n\n"
+        travel_times.append(task.total_time / environment.total_jumps)
+        iteration_nums.append(iterations)
         if task.total_time < 0:
             print "It's negative"
             raise Exception()
         
         agent.learn()
         agent.reset()
+        
+        iterations += 1
+        if iterations % 100 == 0:
+            print iterations
+    
+    
+    scatter = plt.scatter(iteration_nums, travel_times, label="Travel times")
+    
+    plt.setp(scatter, linewidth =.1)
+    plt.title("Measured Travel Times vs Learning")
+    plt.legend()
+    plt.show()
     

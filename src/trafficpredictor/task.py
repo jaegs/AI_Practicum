@@ -8,10 +8,7 @@ from pybrain.rl.environments.episodic import EpisodicTask
 import const, math, random, grid
 
 def get_state(node, period):
-    
-    print "Node ", node
-    print "Period ", period
-    return [node * const.TIME_PERIODS + period]
+    return [node * const.TIME_PERIODS + (period % const.TIME_PERIODS)]
 
 
 class GPS(EpisodicTask):
@@ -35,7 +32,6 @@ class GPS(EpisodicTask):
         node = grid.node_number(const.DESTINATION)
         while(node == grid.node_number(const.DESTINATION)):
             node = random.randint(0, const.NODES - 1)
-            print "Infinite"
         self.start_node = node 
         self.env.reset_grid(self.prev_time, node)
         EpisodicTask.reset(self)
