@@ -30,8 +30,12 @@ class GPS(EpisodicTask):
         self.start_time = self.prev_time
         #choose a random node that is not the destination
         node = grid.node_number(const.DESTINATION)
-        while(node == grid.node_number(const.DESTINATION)):
-            node = random.randint(0, const.NODES - 1)
+        
+        #See what happens
+        node = 0
+        
+#        while(node == grid.node_number(const.DESTINATION)):
+#            node = random.randint(0, const.NODES - 1)
         self.start_node = node 
         self.env.reset_grid(self.prev_time, node)
         EpisodicTask.reset(self)

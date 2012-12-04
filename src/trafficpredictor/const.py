@@ -12,7 +12,7 @@ DOWN = 0
 RIGHT = 1
 
 #grid
-GRID_SIZE = 5
+GRID_SIZE = 10
 NODES = GRID_SIZE**2
 TIME_PERIODS = 48
 MAX_WEIGHT = 10
@@ -34,7 +34,7 @@ ALPHA_ADJ_PERIOD = 0.3 #learning rate for states with adjacent time periods
 GAMMA = 1.0 #discount factor 
 
 #Epsilon Greedy Explorer
-EPSILON = 0.3
+EPSILON = 0.1
 DECAY = 0.9999
 
 #task
@@ -43,5 +43,5 @@ STATES = NODES * PERIODS
 POSSIBLE_ACTIONS = 2
 
 #main
-TRIALS = 1000
+TRIALS = 10000
 ITERATIONS = 0
