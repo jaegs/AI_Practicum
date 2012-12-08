@@ -5,11 +5,13 @@ Created on Nov 23, 2012
 '''
 
 #edge
-NOISE_STD_DEV = 0.5
+NOISE_STD_DEV = 2.0
 
 #actions
 DOWN = 0
 RIGHT = 1
+LEFT = 2
+UP = 3
 
 #grid
 GRID_SIZE = 5
@@ -40,7 +42,7 @@ DECAY = 0.9999
 #task
 PERIODS = 48 #number of time periods in a day
 STATES = NODES * PERIODS
-POSSIBLE_ACTIONS = 2
+POSSIBLE_ACTIONS = 4
 
 #main
 TRIALS = 100

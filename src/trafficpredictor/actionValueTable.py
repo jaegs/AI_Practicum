@@ -26,7 +26,8 @@ class GPSActionValueTable(ActionValueTable):
                 for period in xrange(const.PERIODS):
                     s = task.get_state(g.node_number(edge[0]), period) #state involves node previous to current node
                     a = g.action(edge)
-                    self.updateValue(s, a, -time)
+                    newValue = max(-time, self.getMaxAction(s))
+                    self.updateValue(s, a, newValue)
     
 # TEST
 newGrid = Grid()

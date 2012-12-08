@@ -26,11 +26,18 @@ def node_number(node):
 def int_to_node(node_num):
     a = node_num % const.GRID_SIZE
     b = np.floor(node_num / const.GRID_SIZE)
-    return (b,a)
+    return (a,b)
+
 
 def action(edge):
-    return const.DOWN if edge[1][0] > edge[0][0] else const.RIGHT
-
+    if edge[1][0] > edge[0][0]:
+        return const.DOWN
+    elif edge[1][0] < edge[0][0]:
+        return const.UP
+    elif edge[1][1] > edge[0][1]:
+        return const.LEFT
+    return const.RIGHT
+        
 class InvalidActionException(Exception):
     def __init__(self, node, action):
         Exception.__init__(self)
@@ -55,16 +62,16 @@ class Grid(Environment):
         parameters to at least one of their adjacent edges.
         '''
         
-        self.grid = nx.grid_2d_graph(const.GRID_SIZE, const.GRID_SIZE)
+        self.undirected_grid = nx.grid_2d_graph(const.GRID_SIZE, const.GRID_SIZE)
         
-        #Makes the graph directed so that edges either go in increasing x or y
-        self.grid = self.grid.to_directed()
-        to_remove = []
+        #Makes a directed shallow copy. Creates two directed edges for every undirected edge.
+        self.grid = nx.DiGraph(self.undirected_grid)
+        """to_remove = []
         for e in self.grid.edges_iter():
             ((ax, ay), (bx, by)) = e
             if(bx < ax or by < ay):
                 to_remove.append(e)
-        self.grid.remove_edges_from(to_remove)
+        self.grid.remove_edges_from(to_remove)"""
       
         #TODO - directed edges breaks printing code
         
@@ -134,27 +141,20 @@ class Grid(Environment):
 
         #print ("Action", action)
         (i,j) = self.current_node
-        if action == "up":
+        if action == const.UP and i-1 >= 0:
             jump((i-1,j),self.current_node)
             self.current_node = (i-1,j)
-        elif action == const.DOWN:
-            if i+1 < const.GRID_SIZE:
-                jump(self.current_node, (i+1,j))
-                self.current_node = (i+1,j)
-            else:
-                raise InvalidActionException(self.current_node, action)
-        elif action == "left":
-            if j-1 >= 0:
-                jump((i,j-1) ,self.current_node)
-                self.current_node = (i,j-1)
-            else:
-                raise InvalidActionException(self.current_node, action)
-        elif action == const.RIGHT:
+        elif action == const.DOWN and i+1 < const.GRID_SIZE:
+            jump(self.current_node, (i+1,j))
+            self.current_node = (i+1,j)
+        elif action == const.LEFT and j-1 >= 0:
+            jump((i,j-1) ,self.current_node)
+            self.current_node = (i,j-1)
+        elif action == const.RIGHT and j+1 < const.GRID_SIZE:
             jump(self.current_node, (i,j+1))
             self.current_node = (i,j+1)
         else:
             raise InvalidActionException(self.current_node, action)
-            
         
     
     def reset(self):

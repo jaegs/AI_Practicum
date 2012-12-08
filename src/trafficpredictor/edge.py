@@ -35,6 +35,7 @@ class Edge(object):
 #    print ex.travelTime(float(i))
 
 #Plots travel time scatter plot.
+"""
 import matplotlib.pyplot as plt
 import numpy as np
 edge = Edge(30., 10., 10.)
@@ -61,3 +62,4 @@ plt.setp(line, color = 'r', linewidth=6.0)
 plt.title("Daily Measured Travel Times For One Segment")
 plt.legend()
 plt.show()
+"""

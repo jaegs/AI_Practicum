@@ -25,7 +25,7 @@ if __name__ == '__main__':
     experiment = TripExperiment(task, agent)
     
     for _ in range(const.TRIALS):
-        experiment.doEpisodes()
+        experiment.doEpisodes(number = 1)
         agent.learn()
         agent.reset()
     
