@@ -25,7 +25,7 @@ def node_number(node):
     return a + const.GRID_SIZE * b
 def int_to_node(node_num):
     a = node_num % const.GRID_SIZE
-    b = int(np.floor(node_num / const.GRID_SIZE))
+    b = int(node_num / const.GRID_SIZE)
     return (a,b)
 
 
@@ -66,12 +66,12 @@ class Grid(Environment):
         
         #Makes a directed shallow copy. Creates two directed edges for every undirected edge.
         self.grid = nx.DiGraph(self.undirected_grid)
-        """to_remove = []
+        to_remove = []
         for e in self.grid.edges_iter():
             ((ax, ay), (bx, by)) = e
             if(bx < ax or by < ay):
                 to_remove.append(e)
-        self.grid.remove_edges_from(to_remove)"""
+        self.grid.remove_edges_from(to_remove)
       
         edges = self.grid.edges(data = True)
         shuffle(edges)
@@ -81,9 +81,9 @@ class Grid(Environment):
         rest = edges[division:]
         for u, v, data in seeds:
 
-            weight = randint(1, const.MAX_WEIGHT)
-            intensity = randint(1, const.MAX_INTENSITY)
-            duration = randint(1, const.MAX_DURATION)
+            weight = uniform(const.MIN_WEIGHT, const.MAX_WEIGHT)
+            intensity = uniform(const.MIN_INTENSITY, const.MAX_INTENSITY)
+            duration = uniform(const.MAX_DURATION, const.MAX_DURATION)
 
             #makes the node object a property of the edge
             data[EDGE_KEY] = Edge(weight, duration, intensity)
@@ -127,7 +127,7 @@ class Grid(Environment):
         """
             Return: (current time of the day, current node) tuple
         """
-        return (self.time_of_day, node_number(self.current_node))
+        return node_number(self.current_node)
     
     def performAction(self, action):
         """
@@ -136,17 +136,20 @@ class Grid(Environment):
         """
         def jump(node1, node2):
             self.total_jumps += 1
-            self.time_of_day += self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.time_of_day) / const.PERIOD_IN_MINS
-
+            time_passed = self.grid.get_edge_data(node1,node2)[WEIGHT_KEY]#[EDGE_KEY].travelTime(self.current_time % const.PERIODS, addNoise = False)
+            #print "TP", time_passed
+            self.current_time += time_passed #self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.current_time % const.PERIODS, addNoise = False)
+            #print "CTG", self.current_time
+            
         #print ("Action", action)
         i,j = self.current_node
-        if action == const.UP and i-1 >= 0:
+        if action == const.UP + 100 and i-1 >= 0:
             jump((i-1,j),self.current_node)
             self.current_node = (i-1,j)
         elif action == const.DOWN and i+1 < const.GRID_SIZE:
             jump(self.current_node, (i+1,j))
             self.current_node = (i+1,j)
-        elif action == const.LEFT and j-1 >= 0:
+        elif action == const.LEFT + 100 and j-1 >= 0:
             jump((i,j-1) ,self.current_node)
             self.current_node = (i,j-1)
         elif action == const.RIGHT and j+1 < const.GRID_SIZE:
@@ -159,9 +162,8 @@ class Grid(Environment):
     def reset(self):
         pass
     
-    def reset_grid(self, time_of_day, start_node):
-        self.time_of_day = time_of_day
-        self.current_time = self.time_of_day
+    def reset_grid(self, current_time, start_node):
+        self.current_time = current_time
         self.current_node = int_to_node(start_node)
         self.total_jumps = 0
         #print("Start node", self.current_node)

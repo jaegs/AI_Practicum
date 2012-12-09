@@ -26,8 +26,10 @@ class GPSActionValueTable(ActionValueTable):
                 for period in xrange(const.PERIODS):
                     s = task.get_state(g.node_number(edge[0]), period) #state involves node previous to current node
                     a = g.action(edge)
-                    self.updateValue(s, a, -time)
-        print self.getActionValues(0)
+                    q = - time - grid.grid.get_edge_data(*edge)["weight"]
+                    self.updateValue(s, a, q)
+
+        #print self.getActionValues(const.STATES - 1)
 # TEST
 if __name__ == '__main__':
     newGrid = Grid()

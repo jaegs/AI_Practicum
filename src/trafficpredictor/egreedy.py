@@ -41,7 +41,7 @@ class FeasibleEpsilonGreedyExplorer(DiscreteExplorer):
             actions = [a for a in xrange(len(actionValues)) if actionValues[a] > float("-inf")]
             outbuf[:] = random.choice(actions)
         else:
-            outbuf[:] = inbuf
+            outbuf[:] = self.module.getMaxAction(self.state)
 
         self.epsilon *= self.decay
 

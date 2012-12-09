@@ -26,8 +26,10 @@ class GPS(EpisodicTask):
         self.current_time = 0 
     
     def reset(self):
-        self.prev_time = random.uniform(0,const.PERIODS)
-        self.start_time = self.prev_time
+        self.current_time = self.prev_time = 0.0 #int(random.uniform(0,const.PERIODS))
+        #print "ST", self.current_time
+        self.start_time = self.current_time
+        self.counter = 0
         #choose a random node that is not the destination
         node = grid.node_number(const.DESTINATION)
         
@@ -37,17 +39,27 @@ class GPS(EpisodicTask):
 #        while(node == grid.node_number(const.DESTINATION)):
 #            node = random.randint(0, const.NODES - 1)
         self.start_node = node 
-        self.env.reset_grid(self.prev_time, node)
+        self.env.reset_grid(self.current_time, node)
         EpisodicTask.reset(self)
         
     def getReward(self):
-        return self.prev_time - self.current_time
+        if self.env.current_time == self.current_time:
+            return self.reward
+        self.prev_time = self.current_time
+        self.current_time = self.env.current_time
+        #print "CTT", self.current_time
+        self.reward = self.prev_time - self.current_time
+        #print "R", reward
+        assert self.reward <= 0.0
+        return 9000
     
     def getObservation(self):
-        self.prev_time = self.current_time
-        self.current_time, node = self.env.getSensors()
-        period = math.floor(self.current_time) 
+        self.counter += 1
+        assert self.counter < const.GRID_SIZE * 4, "Looping"
+        node = self.env.getSensors()
+        period = int(self.current_time % const.PERIODS) 
         state = get_state(node, period)
+        assert state[0] >= 0 and state[0] < const.STATES
         return state
         
     def isFinished(self):

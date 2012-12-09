@@ -9,6 +9,11 @@ from egreedy import FeasibleEpsilonGreedyExplorer
 import const
 import numpy as np
 
+class GPSLearnerBasic(Q):
+    def __init__(self, ):
+        Q.__init__(self, const.ALPHA, const.GAMMA)
+        self.explorer = FeasibleEpsilonGreedyExplorer(const.EPSILON, const.DECAY)
+        
 class GPSLearner(Q):
     def __init__(self, ):
         Q.__init__(self, const.ALPHA, const.GAMMA)
@@ -32,7 +37,7 @@ class GPSLearner(Q):
             for state, action, reward in seq: #add states of adjacent time periods
                 #print(state, action, reward)
                 period = state % const.PERIODS
-                node = np.floor(state / const.PERIODS)
+                node = int(state / const.PERIODS)
                 self.dataset2.addSample(node * const.PERIODS + (period + 1) % const.PERIODS, action, reward)
                 self.dataset2.addSample(node * const.PERIODS + (period - 1) % const.PERIODS, action, reward)
         temp = self.dataset 

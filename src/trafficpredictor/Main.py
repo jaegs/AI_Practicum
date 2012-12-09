@@ -5,69 +5,54 @@ Created on Nov 22, 2012
 '''
 
 from grid import Grid
-from task import GPS
+from task import GPS, get_state
 from agent import DrivingLearningAgent
-from q import GPSLearner
-from pybrain.rl.learners.valuebased.q import Q
+from q import *
 from experiment import TripExperiment
 from actionValueTable import GPSActionValueTable
 import const
 import math
 import matplotlib.pyplot as plt
 import scipy.stats as sps
+import numpy as np
 
 
 if __name__ == '__main__':
-    
     environment = Grid()
     controller = GPSActionValueTable()
     controller.initialize(environment)
     
-    learner = Q()#GPSLearner()
+    learner = GPSLearnerBasic()#GPSLearner()
     agent = DrivingLearningAgent(controller, learner)
     task = GPS(environment)
     experiment = TripExperiment(task, agent)
     
     #Initialize the variables for statistical analysis
-    travel_times, iteration_nums = [], []
-    iterations = []
-    for i in range(const.PERIODS):
-        travel_times.append([])
-    for i in range(const.PERIODS):
-        iteration_nums.append([])
-    for i in range(const.PERIODS):
-        iterations.append(0)
-    counter = 0
+    data = [None] * const.TRIALS
     
-    for _ in range(const.TRIALS):
+    for t in xrange(const.TRIALS):
         experiment.doEpisodes(number = 1)
-
-        for i in range(const.PERIODS):
-            if math.floor(task.start_time) == i:
-                travel_times[i].append(task.total_time / environment.total_jumps)
-                iteration_nums[i].append(iterations[i])
-                iterations[i] += 1
-                break
-        
+        i = int(task.start_time)
+        data[t] = (i,task.total_time, t)
         agent.learn()
         agent.reset()
-        
-        
-        if counter % 100 == 0:
-            print counter
-        counter += 1
-        print counter
+        if t % 10 == 0:
+            print t
     
+    data_by_period = []
+    for i in xrange(const.PERIODS):
+        data_by_period.append([d[1:] for d in data if d[0] == i])
     
     
     #print the correlation values
-    for i in range(const.TIME_PERIODS):
-        print "(Correlation,p-value) for time of day %d" % i
-        correlation,pval = sps.pearsonr(iteration_nums[i], travel_times[i])
-        print sps.pearsonr(iteration_nums[i], travel_times[i])
+#    for i in xrange(const.PERIODS):
+#        print "(Correlation,p-value) for time of day %d" % i
+#        traveltime, itert = zip(*data_by_period[i])
+#        print sps.pearsonr(traveltime, itert)
     
     #Plot one for a constant time of day
     plt.title("Measured Travel Times vs Learning")
-    scatter = plt.scatter(iteration_nums[16], travel_times[16], label="Travel times")
+    traveltime, itert = zip(*data_by_period[0])#const.MID_DAY])
+    scatter = plt.scatter(itert, traveltime, label="Travel times")
     plt.setp(scatter, linewidth =.1)
     plt.show()

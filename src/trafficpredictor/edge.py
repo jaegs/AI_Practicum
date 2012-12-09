@@ -9,6 +9,10 @@ import random
 import const
 import scipy.stats as ss
 
+def boundednormalvariate(mu, sigma, lb):
+    while True:
+        val = random.normalvariate(mu, sigma)
+        if val >= lb: return val
 
 class Edge(object):
     '''
@@ -23,22 +27,25 @@ class Edge(object):
         self.intensity = intensity
         self.duration = duration
         
+        
     def travelTime(self, time, addNoise = True):
-        exp = math.exp(-1. * ((time - float(const.PERIODS) / 2.) / self.duration) ** 2.)
+        assert time >= 0.0 and time < const.PERIODS 
+        time = int(time)
+        exp = math.exp(-1. * ((int(time) - const.PERIODS / 2.) / self.duration) ** 2.)
         #normal dist generator truncated on [0,+inf]
-        noise = ss.truncnorm.rvs(self.intensity * -1, float("inf"), scale = const.NOISE_STD_DEV)
-        return self.weight + \
-            (self.intensity + noise*addNoise) * exp \
+        #noise = ss.truncnorm.rvs(0, float("inf"), scale = const.NOISE_STD_DEV)
+        noise = boundednormalvariate(0, const.NOISE_STD_DEV, -self.intensity)
+        time =  (self.weight + \
+            (self.intensity + noise*addNoise) * exp) / 12.
+        assert time > 0, time
+        return time
          
-#ex = Edge(30., 10., 10.)
-#for i in xrange(const.PERIODS):
-#    print ex.travelTime(float(i))
 
 #Plots travel time scatter plot.
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     import numpy as np
-    edge = Edge(30., 10., 10.)
+    edge = Edge(1, 7., 50 / const.PERIODS)
     x, y = [], []
     for t in xrange(100):
         x_t = t/100. * const.PERIODS
