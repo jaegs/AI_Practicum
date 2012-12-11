@@ -14,9 +14,9 @@ LEFT = 2
 UP = 3
 
 #grid
-GRID_SIZE = 3#10
+GRID_SIZE = 10
 NODES = GRID_SIZE**2
-PERIODS = 1 #48
+PERIODS = 10
 MAX_WEIGHT = 1.5
 MIN_WEIGHT = .5
 MAX_DURATION = 9.
@@ -32,17 +32,23 @@ SENSOR_NODE_POS = 0
 
 
 #Q Learning
-ALPHA = .2 #0.5 #learning rate
+ALPHA = .5 #0.5 #learning rate
 ALPHA_ADJ_PERIOD = 0.3 #learning rate for states with adjacent time periods
 GAMMA = 1.0 #discount factor 
 
 #Epsilon Greedy Explorer
-EPSILON = 0.0 #0.1
-DECAY = 0.9 #0.9999
+EPSILON = 0.3
+DECAY = 0.999
 
 #task
 STATES = NODES * PERIODS
 POSSIBLE_ACTIONS = 2
 
 #main
-TRIALS = 4000
+TRIALS = 10000
+
+#options
+SAME_START = True #nothing should show on graph since travel time is essentially
+EDGE_NOISE = True
+TWO_WAY = False
+USE_PERIODS = True

@@ -30,15 +30,14 @@ class Edge(object):
         
     def travelTime(self, time, addNoise = True):
         assert time >= 0.0 and time < const.PERIODS 
-        time = int(time)
         exp = math.exp(-1. * ((int(time) - const.PERIODS / 2.) / self.duration) ** 2.)
         #normal dist generator truncated on [0,+inf]
         #noise = ss.truncnorm.rvs(0, float("inf"), scale = const.NOISE_STD_DEV)
         noise = boundednormalvariate(0, const.NOISE_STD_DEV, -self.intensity)
-        time =  (self.weight + \
+        traveltime =  (self.weight + \
             (self.intensity + noise*addNoise) * exp) / 12.
-        assert time > 0, time
-        return time
+        assert traveltime > 0, traveltime
+        return traveltime
          
 
 #Plots travel time scatter plot.

@@ -33,10 +33,10 @@ if __name__ == '__main__':
     for t in xrange(const.TRIALS):
         experiment.doEpisodes(number = 1)
         i = int(task.start_time)
-        data[t] = (i,task.total_time, t)
+        data[t] = (i,task.total_time /  environment.total_jumps, t)
         agent.learn()
         agent.reset()
-        if t % 10 == 0:
+        if t % 100 == 0:
             print t
     
     data_by_period = []
@@ -44,7 +44,7 @@ if __name__ == '__main__':
         data_by_period.append([d[1:] for d in data if d[0] == i])
     
     
-    #print the correlation values
+#    #print the correlation values
 #    for i in xrange(const.PERIODS):
 #        print "(Correlation,p-value) for time of day %d" % i
 #        traveltime, itert = zip(*data_by_period[i])
@@ -52,7 +52,10 @@ if __name__ == '__main__':
     
     #Plot one for a constant time of day
     plt.title("Measured Travel Times vs Learning")
-    traveltime, itert = zip(*data_by_period[0])#const.MID_DAY])
+    if not const.USE_PERIODS:
+        traveltime, itert = zip(*data_by_period[0])
+    else:
+        traveltime, itert = zip(*data_by_period[const.MID_DAY])
     scatter = plt.scatter(itert, traveltime, label="Travel times")
     plt.setp(scatter, linewidth =.1)
     plt.show()

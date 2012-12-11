@@ -66,12 +66,13 @@ class Grid(Environment):
         
         #Makes a directed shallow copy. Creates two directed edges for every undirected edge.
         self.grid = nx.DiGraph(self.undirected_grid)
-        to_remove = []
-        for e in self.grid.edges_iter():
-            ((ax, ay), (bx, by)) = e
-            if(bx < ax or by < ay):
-                to_remove.append(e)
-        self.grid.remove_edges_from(to_remove)
+        if not const.TWO_WAY:
+            to_remove = []
+            for e in self.grid.edges_iter():
+                ((ax, ay), (bx, by)) = e
+                if(bx < ax or by < ay):
+                    to_remove.append(e)
+            self.grid.remove_edges_from(to_remove)
       
         edges = self.grid.edges(data = True)
         shuffle(edges)
@@ -136,7 +137,7 @@ class Grid(Environment):
         """
         def jump(node1, node2):
             self.total_jumps += 1
-            time_passed = self.grid.get_edge_data(node1,node2)[WEIGHT_KEY]#[EDGE_KEY].travelTime(self.current_time % const.PERIODS, addNoise = False)
+            time_passed = self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.current_time % const.PERIODS, addNoise = const.EDGE_NOISE)
             #print "TP", time_passed
             self.current_time += time_passed #self.grid.get_edge_data(node1,node2)[EDGE_KEY].travelTime(self.current_time % const.PERIODS, addNoise = False)
             #print "CTG", self.current_time
